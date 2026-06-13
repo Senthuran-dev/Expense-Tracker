@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: backend
+  datasource:
+    # Replace these placeholders with your Supabase credentials
+    url: jdbc:postgresql://<SUPABASE_HOST>:<SUPABASE_PORT>/<SUPABASE_DBNAME>
+    username: <SUPABASE_USER>
+    password: <SUPABASE_PASSWORD>
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+server:
+  port: 8080
