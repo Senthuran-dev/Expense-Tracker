@@ -21,3 +21,10 @@ spring:
 
 server:
   port: 8080
+
+app:
+  jwt:
+    # A dummy 256-bit secret key for local development
+    secret: MzYxM2Y4MWMyZGI4MjliNmU3OWZhNGJkMDUyYzRhNzI4Nzk2ZTMyNjg5OGI1MzQxNWJmNWRjMTMwYWNjMmE4OA==
+    # 24 hours in milliseconds
+    expiration: 86400000
