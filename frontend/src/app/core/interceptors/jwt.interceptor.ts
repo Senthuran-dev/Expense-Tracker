@@ -1,18 +1,28 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { AuthService } from '../services/auth.service';
+import { catchError, throwError } from 'rxjs';
 
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
-  // TODO: Replace with an actual authentication service call to get the token
-  const token = localStorage.getItem('access_token');
+  const authService = inject(AuthService);
+  const token = authService.getToken();
+
+  let clonedRequest = req;
   
   if (token) {
-    const cloned = req.clone({
+    clonedRequest = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`
       }
     });
-    return next(cloned);
   }
-  
-  return next(req);
+
+  return next(clonedRequest).pipe(
+    catchError((error: HttpErrorResponse) => {
+      if (error.status === 401) {
+        authService.logout();
+      }
+      return throwError(() => error);
+    })
+  );
 };

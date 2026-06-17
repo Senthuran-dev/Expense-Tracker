@@ -64,44 +64,37 @@ public class AnalyticsService {
 
     public List<CategoryBreakdownDTO> getCategoryBreakdown(String email, Short month, Short year) {
         User user = getUser(email);
-        LocalDate startDate = LocalDate.of(year, month, 1);
-        LocalDate endDate = YearMonth.of(year, month).atEndOfMonth();
-
-        List<Expense> expenses = expenseRepository.findByUserAndDateBetween(user.getId(), startDate, endDate);
         
-        BigDecimal grandTotal = expenses.stream().map(Expense::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        List<ExpenseRepository.CategoryBreakdownProjection> projections = 
+                expenseRepository.getCategoryBreakdown(user.getId(), month, year);
 
-        Map<Category, BigDecimal> categoryTotals = expenses.stream()
-                .collect(Collectors.groupingBy(Expense::getCategory,
-                        Collectors.reducing(BigDecimal.ZERO, Expense::getAmount, BigDecimal::add)));
+        BigDecimal grandTotal = projections.stream()
+                .map(ExpenseRepository.CategoryBreakdownProjection::getTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        return categoryTotals.entrySet().stream()
-                .map(entry -> {
-                    Category category = entry.getKey();
-                    BigDecimal total = entry.getValue();
-                    double percentage = grandTotal.compareTo(BigDecimal.ZERO) == 0 ? 0.0 :
-                            total.doubleValue() / grandTotal.doubleValue() * 100.0;
+        return projections.stream().map(p -> {
+            double percentage = grandTotal.compareTo(BigDecimal.ZERO) == 0 ? 0.0 :
+                    p.getTotal().doubleValue() / grandTotal.doubleValue() * 100.0;
 
-                    return CategoryBreakdownDTO.builder()
-                            .categoryName(category.getName())
-                            .categoryColor(category.getColor())
-                            .total(total)
-                            .percentage(percentage)
-                            .build();
-                })
-                .collect(Collectors.toList());
+            return CategoryBreakdownDTO.builder()
+                    .categoryName(p.getName())
+                    .categoryColor(p.getColor())
+                    .total(p.getTotal())
+                    .percentage(percentage)
+                    .build();
+        }).collect(Collectors.toList());
     }
 
     public List<MonthlyTrendDTO> getMonthlyTrend(String email, Short year) {
         User user = getUser(email);
-        LocalDate startDate = LocalDate.of(year, 1, 1);
-        LocalDate endDate = LocalDate.of(year, 12, 31);
         
-        List<Expense> expenses = expenseRepository.findByUserAndDateBetween(user.getId(), startDate, endDate);
+        List<ExpenseRepository.MonthlyTrendProjection> projections = 
+                expenseRepository.getMonthlyTrend(user.getId(), year);
 
-        Map<Integer, BigDecimal> monthlyTotals = expenses.stream()
-                .collect(Collectors.groupingBy(e -> e.getExpenseDate().getMonthValue(),
-                        Collectors.reducing(BigDecimal.ZERO, Expense::getAmount, BigDecimal::add)));
+        Map<Integer, BigDecimal> monthlyTotals = projections.stream()
+                .collect(Collectors.toMap(
+                        ExpenseRepository.MonthlyTrendProjection::getMonth, 
+                        ExpenseRepository.MonthlyTrendProjection::getTotal));
 
         List<MonthlyTrendDTO> trends = new ArrayList<>();
         for (int i = 1; i <= 12; i++) {
