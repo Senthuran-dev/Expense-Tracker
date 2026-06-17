@@ -48,4 +48,38 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             @Param("year") Short year);
             
     boolean existsByCategoryId(Long categoryId);
+
+    interface CategoryBreakdownProjection {
+        String getName();
+        String getColor();
+        BigDecimal getTotal();
+        Long getCount();
+    }
+
+    interface MonthlyTrendProjection {
+        Integer getMonth();
+        BigDecimal getTotal();
+    }
+
+    @Query("SELECT c.name as name, c.color as color, SUM(e.amount) AS total, COUNT(e) AS count "
+           + "FROM Expense e JOIN e.category c "
+           + "WHERE e.user.id = :userId "
+           + "AND FUNCTION('MONTH', e.expenseDate) = :month "
+           + "AND FUNCTION('YEAR',  e.expenseDate) = :year "
+           + "GROUP BY c.id, c.name, c.color "
+           + "ORDER BY total DESC")
+    List<CategoryBreakdownProjection> getCategoryBreakdown(
+            @Param("userId") Long userId, 
+            @Param("month") Short month, 
+            @Param("year") Short year);
+
+    @Query("SELECT FUNCTION('MONTH', e.expenseDate) AS month, SUM(e.amount) AS total "
+           + "FROM Expense e "
+           + "WHERE e.user.id = :userId "
+           + "AND FUNCTION('YEAR', e.expenseDate) = :year "
+           + "GROUP BY FUNCTION('MONTH', e.expenseDate) "
+           + "ORDER BY month ASC")
+    List<MonthlyTrendProjection> getMonthlyTrend(
+            @Param("userId") Long userId, 
+            @Param("year") Short year);
 }
