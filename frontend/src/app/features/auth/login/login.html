@@ -1,1 +1,96 @@
-<p>login works!</p>
+<div class="bg-surface font-body-md text-on-surface h-screen flex flex-col md:flex-row overflow-hidden">
+<!-- Left Panel -->
+<div class="hidden md:flex flex-col justify-between w-1/2 bg-primary-container p-12 text-on-primary relative overflow-hidden geometric-texture">
+<!-- Logo -->
+<div class="z-10">
+<h1 class="font-headline-md text-headline-md tracking-tight">ExpenseIQ</h1>
+</div>
+<!-- Hero Content -->
+<div class="z-10 max-w-lg mt-auto mb-24">
+<h2 class="font-display-lg text-[48px] leading-[1.1] mb-6 text-on-primary">Take control of every rupee.</h2>
+<p class="font-body-lg text-body-lg text-on-primary/80 mb-12">Track spending, set budgets, and understand where your money goes with precision and clarity.</p>
+<!-- Stat Cards -->
+<div class="grid grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div>
+<div class="w-8 h-8 rounded bg-secondary/20 flex items-center justify-center mb-3 text-secondary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+</div>
+<div class="font-data-mono text-data-mono text-on-primary">LKR 1.2M</div>
+<div class="font-label-caps text-label-caps text-on-primary/60 mt-1">TRACKED</div>
+</div>
+<!-- Card 2 -->
+<div>
+<div class="w-8 h-8 rounded bg-secondary/20 flex items-center justify-center mb-3 text-secondary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">category</span>
+</div>
+<div class="font-data-mono text-data-mono text-on-primary">9</div>
+<div class="font-label-caps text-label-caps text-on-primary/60 mt-1">CATEGORIES</div>
+</div>
+<!-- Card 3 -->
+<div>
+<div class="w-8 h-8 rounded bg-secondary/20 flex items-center justify-center mb-3 text-secondary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">monitoring</span>
+</div>
+<div class="font-data-mono text-data-mono text-on-primary">Real-time</div>
+<div class="font-label-caps text-label-caps text-on-primary/60 mt-1">ANALYTICS</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Panel (Login Form) -->
+<div class="w-full md:w-1/2 flex flex-col justify-center items-center p-8 bg-surface relative">
+<div class="w-full max-w-md">
+<!-- Mobile Logo -->
+<div class="md:hidden flex justify-center mb-8">
+<h1 class="font-headline-md text-headline-md text-primary-container">ExpenseIQ</h1>
+</div>
+<!-- Form Header -->
+<div class="text-center mb-8">
+<img alt="ExpenseIQ Logo" class="w-10 h-10 mx-auto mb-4 rounded-full" src="data:image/png;base64,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"/>
+<h2 class="font-headline-md text-[28px] leading-tight text-primary-container mb-2">Welcome back</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Sign in to your account to continue</p>
+</div>
+<!-- Form -->
+<form class="space-y-6" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+<!-- Email Input -->
+<div class="relative">
+<input class="peer w-full h-14 border border-outline px-4 pt-4 pb-1 rounded bg-transparent font-body-md text-body-md text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary focus:shadow-[0_0_4px_rgba(0,107,95,0.2)] transition-all placeholder-transparent" id="email" formControlName="email" placeholder="name@example.com" type="email"/>
+<label class="absolute left-4 top-2 font-body-md text-xs text-on-surface-variant transition-all peer-placeholder-shown:text-body-md peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-xs peer-focus:text-secondary" for="email">Email address</label>
+</div>
+<!-- Password Input -->
+<div class="relative">
+<input class="peer w-full h-14 border border-outline px-4 pt-4 pb-1 pr-12 rounded bg-transparent font-body-md text-body-md text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary focus:shadow-[0_0_4px_rgba(0,107,95,0.2)] transition-all placeholder-transparent" id="password" formControlName="password" placeholder="••••••••" type="password"/>
+<label class="absolute left-4 top-2 font-body-md text-xs text-on-surface-variant transition-all peer-placeholder-shown:text-body-md peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-xs peer-focus:text-secondary" for="password">Password</label>
+<button class="absolute right-4 top-4 text-on-surface-variant hover:text-on-surface focus:outline-none" type="button">
+<span class="material-symbols-outlined">visibility_off</span>
+</button>
+</div>
+<!-- Forgot Password -->
+<div class="flex justify-end">
+<a class="font-body-md text-body-md text-secondary hover:text-secondary-fixed transition-colors" href="#">Forgot password?</a>
+</div>
+<!-- Submit Button -->
+<div *ngIf="error" class="text-error text-sm text-center mb-2">{{ error }}</div>
+<button class="w-full h-12 bg-secondary text-on-secondary font-title-sm text-title-sm rounded-lg hover:bg-secondary/90 transition-colors flex items-center justify-center disabled:opacity-50" type="submit" [disabled]="loginForm.invalid || isLoading">
+    <span *ngIf="isLoading" class="material-symbols-outlined animate-spin mr-2">progress_activity</span>
+    Sign in
+</button>
+</form>
+<!-- Divider -->
+<div class="relative flex items-center py-6">
+<div class="flex-grow border-t border-outline-variant"></div>
+<span class="flex-shrink-0 mx-4 font-body-md text-body-md text-on-surface-variant">or</span>
+<div class="flex-grow border-t border-outline-variant"></div>
+</div>
+<!-- Create Account -->
+<div class="text-center">
+<a class="font-body-md text-body-md text-primary-container hover:text-primary transition-colors font-medium" routerLink="/register">Create an account</a>
+</div>
+</div>
+<!-- Footer -->
+<div class="absolute bottom-6 w-full text-center px-4">
+<p class="font-label-caps text-[10px] text-on-surface-variant tracking-wider">© 2025 ExpenseIQ. Built with Spring Boot &amp; Angular.</p>
+</div>
+</div>
+</div>

@@ -1,1 +1,61 @@
-<p>expense-form-dialog works!</p>
+<form [formGroup]="expenseForm" (ngSubmit)="onSubmit()" class="flex flex-col h-full bg-surface-container-lowest rounded-xl overflow-hidden">
+<!-- Header -->
+<header class="flex items-center justify-between px-stack_lg py-stack_md border-b border-surface-variant">
+    <h2 class="font-headline-md text-headline-md text-primary">{{ isEditMode ? 'Edit Expense' : 'Add Expense' }}</h2>
+    <button type="button" (click)="onCancel()" aria-label="Close dialog" class="text-outline hover:text-on-surface transition-colors p-1 rounded-full hover:bg-surface-container-low">
+        <span class="material-symbols-outlined block">close</span>
+    </button>
+</header>
+<!-- Body -->
+<div class="p-stack_lg flex flex-col gap-stack_lg flex-1 overflow-y-auto">
+    <!-- Amount Field -->
+    <div class="flex flex-col gap-stack_sm">
+        <label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Amount</label>
+        <div class="relative flex items-center border border-outline-variant rounded bg-surface-container-lowest focus-within:border-secondary focus-within:ring-2 focus-within:ring-secondary/20 transition-all h-12"
+             [class.border-error]="expenseForm.get('amount')?.invalid && expenseForm.get('amount')?.touched">
+            <span class="absolute left-4 font-label-caps text-label-caps text-outline uppercase">Rs.</span>
+            <input formControlName="amount" type="number" step="0.01" class="w-full h-full bg-transparent pr-4 pl-12 text-right font-data-mono text-data-mono text-on-surface focus:outline-none border-none ring-0"/>
+        </div>
+        <span *ngIf="expenseForm.get('amount')?.invalid && expenseForm.get('amount')?.touched" class="text-error text-xs">Valid amount is required</span>
+    </div>
+    <!-- Grid: Category & Date -->
+    <div class="grid grid-cols-2 gap-stack_md">
+        <!-- Category -->
+        <div class="flex flex-col gap-stack_sm relative">
+            <label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Category</label>
+            <select formControlName="categoryId" class="appearance-none border border-outline-variant rounded bg-surface-container-lowest px-4 h-12 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all w-full font-body-md text-body-md text-on-surface"
+                    [class.border-error]="expenseForm.get('categoryId')?.invalid && expenseForm.get('categoryId')?.touched">
+                <option value="" disabled selected>Select a category</option>
+                <option *ngFor="let cat of (categories$ | async)" [value]="cat.id">
+                    {{ cat.name }}
+                </option>
+            </select>
+            <span class="material-symbols-outlined text-outline absolute right-4 top-[38px] pointer-events-none">expand_more</span>
+            <span *ngIf="expenseForm.get('categoryId')?.invalid && expenseForm.get('categoryId')?.touched" class="text-error text-xs">Category is required</span>
+        </div>
+        <!-- Date -->
+        <div class="flex flex-col gap-stack_sm">
+            <label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Date</label>
+            <div class="relative flex items-center border border-outline-variant rounded bg-surface-container-lowest h-12 focus-within:border-secondary focus-within:ring-2 focus-within:ring-secondary/20 transition-all"
+                 [class.border-error]="expenseForm.get('date')?.invalid && expenseForm.get('date')?.touched">
+                <input formControlName="date" type="date" class="w-full h-full bg-transparent px-4 font-body-md text-body-md text-on-surface focus:outline-none border-none ring-0 appearance-none"/>
+            </div>
+            <span *ngIf="expenseForm.get('date')?.invalid && expenseForm.get('date')?.touched" class="text-error text-xs">Date is required</span>
+        </div>
+    </div>
+    <!-- Description Field -->
+    <div class="flex flex-col gap-stack_sm">
+        <label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Description</label>
+        <input formControlName="description" class="border border-outline-variant rounded bg-surface-container-lowest px-4 h-12 font-body-md text-body-md text-on-surface focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all" type="text" placeholder="e.g. Dinner at Pilawoos"/>
+    </div>
+</div>
+<!-- Footer -->
+<footer class="flex items-center justify-end px-stack_lg py-stack_md border-t border-surface-variant bg-surface-container-low/30 gap-stack_sm">
+    <button type="button" (click)="onCancel()" class="font-title-sm text-title-sm text-primary px-4 py-2 rounded border border-transparent hover:bg-surface-variant focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all">
+        Cancel
+    </button>
+    <button type="submit" [disabled]="expenseForm.invalid" class="font-title-sm text-title-sm bg-secondary text-on-secondary px-4 py-2 rounded border border-transparent hover:bg-on-secondary-container hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+        {{ isEditMode ? 'Save Expense' : 'Create Expense' }}
+    </button>
+</footer>
+</form>

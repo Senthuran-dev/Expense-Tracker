@@ -64,6 +64,19 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
+  updateProfile(name: string): Observable<UserProfile> {
+    return this.http.put<UserProfile>(`${environment.apiUrl}/auth/me`, { name }).pipe(
+      tap(user => {
+        localStorage.setItem('user', JSON.stringify(user));
+        this.currentUserSubject.next(user);
+      })
+    );
+  }
+
+  changePassword(request: any): Observable<void> {
+    return this.http.put<void>(`${environment.apiUrl}/auth/change-password`, request);
+  }
+
   getToken(): string | null {
     return localStorage.getItem('token');
   }

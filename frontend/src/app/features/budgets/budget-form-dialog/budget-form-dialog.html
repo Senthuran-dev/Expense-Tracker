@@ -1,0 +1,66 @@
+<article class="bg-surface rounded-xl flex flex-col w-full h-full max-h-[90vh]">
+    <header class="flex justify-between items-start px-container_padding pt-container_padding pb-stack_md border-b border-surface-container-highest shrink-0">
+        <div>
+            <h2 class="font-headline-md text-headline-md text-primary-container m-0">Set Monthly Budget</h2>
+            <p class="font-body-md text-body-md text-on-surface-variant mt-1">Define how much you want to spend in this category per month.</p>
+        </div>
+        <button (click)="onCancel()" aria-label="Close" class="text-on-surface-variant hover:text-on-surface transition-colors focus:outline-none">
+            <span class="material-symbols-outlined" data-icon="close">close</span>
+        </button>
+    </header>
+
+    <form [formGroup]="budgetForm" (ngSubmit)="onSubmit()" class="flex flex-col flex-1 overflow-hidden">
+        <div class="p-container_padding flex flex-col gap-stack_md overflow-y-auto">
+            <!-- Field 1: Category -->
+            <div class="flex flex-col gap-1">
+                <label class="font-title-sm text-title-sm text-on-surface">Category</label>
+                <div class="relative">
+                    <select formControlName="categoryId" class="w-full appearance-none bg-surface border border-outline-variant rounded-lg px-4 py-3 pr-10 text-on-surface focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition-shadow">
+                        <option [ngValue]="null" disabled>Select a category</option>
+                        <option *ngFor="let cat of categories$ | async" [value]="cat.id">
+                            {{ cat.name }}
+                        </option>
+                    </select>
+                    <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" data-icon="arrow_drop_down">arrow_drop_down</span>
+                </div>
+                <p class="font-body-md text-[13px] text-on-surface-variant">Budget is set per category, per month.</p>
+            </div>
+
+            <!-- Field 2: Monthly Limit -->
+            <div class="flex flex-col gap-1">
+                <label class="font-title-sm text-title-sm text-on-surface">Monthly Limit</label>
+                <div class="relative flex items-center">
+                    <span class="absolute left-4 font-label-caps text-label-caps text-on-surface-variant select-none">LKR</span>
+                    <input formControlName="amount" class="w-full bg-surface border border-outline-variant rounded-lg pl-12 pr-4 py-3 font-data-mono text-[18px] text-on-surface text-right focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition-shadow" placeholder="0" type="number" min="1"/>
+                </div>
+            </div>
+
+            <!-- Field 4: Month/Year Selection -->
+            <div class="grid grid-cols-2 gap-4 mt-1 bg-surface-container-low p-4 rounded-lg border border-outline-variant/30">
+                <div class="flex flex-col gap-1">
+                    <label class="font-label-caps text-label-caps text-on-surface-variant">Month</label>
+                    <div class="relative">
+                        <select formControlName="month" class="w-full appearance-none bg-surface border border-outline-variant rounded-lg px-3 py-2 pr-8 text-on-surface focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition-shadow font-body-md text-body-md">
+                            <option *ngFor="let m of months" [value]="m.value">{{ m.label }}</option>
+                        </select>
+                        <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-sm" data-icon="arrow_drop_down">arrow_drop_down</span>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="font-label-caps text-label-caps text-on-surface-variant">Year</label>
+                    <div class="relative">
+                        <select formControlName="year" class="w-full appearance-none bg-surface border border-outline-variant rounded-lg px-3 py-2 pr-8 text-on-surface focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition-shadow font-body-md text-body-md">
+                            <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+                        </select>
+                        <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-sm" data-icon="arrow_drop_down">arrow_drop_down</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="flex justify-end gap-3 px-container_padding py-4 border-t border-surface-container-highest bg-surface-container-lowest shrink-0">
+            <button type="button" (click)="onCancel()" class="px-5 py-2 font-title-sm text-title-sm text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-secondary">Cancel</button>
+            <button type="submit" [disabled]="budgetForm.invalid" class="px-6 py-2 bg-secondary text-on-secondary font-title-sm text-title-sm rounded-lg hover:bg-secondary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 h-[40px] shadow-sm disabled:opacity-50">Save Budget</button>
+        </footer>
+    </form>
+</article>
