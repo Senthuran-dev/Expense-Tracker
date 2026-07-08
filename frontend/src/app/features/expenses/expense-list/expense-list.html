@@ -1,1 +1,109 @@
-<p>expense-list works!</p>
+<!-- 1. FILTER BAR -->
+<div class="bg-surface shadow-sm rounded-lg p-4 mb-4 flex flex-col md:flex-row items-center justify-between gap-4">
+<!-- Search Input -->
+<div class="relative w-full md:w-[260px]">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full pl-10 pr-4 py-2 border border-outline-variant rounded bg-surface focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent font-body-md text-body-md text-on-surface" placeholder="Search description..." type="text"/>
+</div>
+<!-- Middle Filters -->
+<div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+<button class="flex items-center gap-1 px-3 py-1.5 border border-outline-variant rounded-full text-on-surface font-body-md text-body-md hover:bg-surface-container-low transition-colors">
+                        June 2025
+                        <span class="material-symbols-outlined text-secondary text-[18px]">arrow_drop_down</span>
+</button>
+<button class="flex items-center gap-1 px-3 py-1.5 border border-outline-variant rounded-full text-on-surface font-body-md text-body-md hover:bg-surface-container-low transition-colors">
+                        All Categories
+                        <span class="material-symbols-outlined text-secondary text-[18px]">arrow_drop_down</span>
+</button>
+<button class="flex items-center gap-1 px-3 py-1.5 border border-outline-variant rounded-full text-on-surface font-body-md text-body-md hover:bg-surface-container-low transition-colors">
+                        Jun 1 – Jun 30
+                        <span class="material-symbols-outlined text-secondary text-[18px]">arrow_drop_down</span>
+</button>
+</div>
+<!-- Right Actions -->
+<div class="flex items-center gap-3 w-full md:w-auto justify-end">
+<button (click)="openExportDialog()" class="flex items-center gap-1 px-4 py-2 border border-primary-container text-primary-container rounded font-title-sm text-title-sm hover:bg-primary-container/5 transition-colors">
+                        Export
+                        <span class="material-symbols-outlined text-[18px]">arrow_drop_down</span>
+</button>
+<button (click)="openDialog()" class="flex items-center gap-2 px-4 h-[40px] bg-secondary text-on-secondary rounded font-title-sm text-title-sm hover:bg-secondary/90 transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                        Add Expense
+                    </button>
+</div>
+</div>
+<!-- 2. SUMMARY CHIPS -->
+<div class="flex items-center gap-3 mb-6">
+<div class="px-3 py-1.5 border border-outline-variant rounded bg-surface font-body-md text-body-md text-on-surface-variant">
+                    47 expenses
+                </div>
+<div class="px-3 py-1.5 border border-secondary rounded bg-secondary/5 font-title-sm text-title-sm text-secondary font-bold">
+                    Total: LKR 87,450
+                </div>
+<div class="px-3 py-1.5 border border-outline-variant rounded bg-surface font-body-md text-body-md text-on-surface-variant">
+                    Avg per day: LKR 2,915
+                </div>
+</div>
+<!-- EXPENSES TABLE AREA -->
+<div class="bg-surface shadow-sm rounded-lg border border-outline-variant overflow-hidden">
+<!-- 4. BATCH ACTION BAR -->
+<div class="bg-primary-fixed px-4 py-3 border-b border-primary-fixed-dim flex items-center justify-between">
+<span class="font-body-md text-body-md text-on-primary-fixed">1 selected</span>
+<div class="flex items-center gap-4">
+<button class="font-title-sm text-title-sm text-primary hover:underline">Delete selected</button>
+<span class="text-outline-variant">|</span>
+<button class="font-title-sm text-title-sm text-primary hover:underline">Export selected</button>
+</div>
+</div>
+<!-- 3. EXPENSES TABLE -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant bg-surface-container-lowest">
+<th class="p-4 w-12"><input checked="" class="rounded border-outline text-secondary focus:ring-secondary w-4 h-4 cursor-pointer" type="checkbox"/></th>
+<th class="p-4 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Date</th>
+<th class="p-4 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Category</th>
+<th class="p-4 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Description</th>
+<th class="p-4 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider text-right">Amount</th>
+<th class="p-4 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider text-center">Actions</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md">
+    <tr *ngIf="!(expensesPage$ | async)?.content?.length" class="border-b border-outline-variant/50 hover:bg-surface-container-low transition-colors">
+        <td colspan="6" class="p-8 text-center text-on-surface-variant">No expenses found.</td>
+    </tr>
+    <tr *ngFor="let expense of (expensesPage$ | async)?.content" class="border-b border-outline-variant/50 hover:bg-surface-container-low transition-colors bg-surface-container-lowest">
+        <td class="p-4"><input class="rounded border-outline text-secondary focus:ring-secondary w-4 h-4 cursor-pointer" type="checkbox"/></td>
+        <td class="p-4 text-on-surface font-data-mono">{{ expense.expenseDate | date:'mediumDate' }}</td>
+        <td class="p-4">
+            <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded font-label-caps text-[11px] uppercase border"
+                  [ngStyle]="{'background-color': expense.categoryColor + '20', 'color': expense.categoryColor, 'border-color': expense.categoryColor + '40'}">
+                <span class="material-symbols-outlined text-[14px]">{{ expense.categoryIcon || 'category' }}</span>
+                {{ expense.categoryName || 'Uncategorized' }}
+            </span>
+        </td>
+        <td class="p-4 text-on-surface">{{ expense.description }}</td>
+        <td class="p-4 text-right font-data-mono text-on-surface font-medium">{{ expense.amount | currency:'LKR ':'symbol':'1.0-0' }}</td>
+        <td class="p-4 text-center text-outline">
+            <button class="hover:text-primary transition-colors mx-1" (click)="openDialog(expense.id)"><span class="material-symbols-outlined text-[20px]">edit</span></button>
+            <button class="hover:text-error transition-colors mx-1" (click)="deleteExpense(expense.id)"><span class="material-symbols-outlined text-[20px]">delete</span></button>
+        </td>
+    </tr>
+</tbody>
+</table>
+</div>
+<!-- 5. PAGINATION -->
+<div *ngIf="expensesPage$ | async as page" class="px-6 py-3 border-t border-outline-variant bg-surface-container-lowest flex items-center justify-end gap-6 text-on-surface-variant font-body-md text-body-md">
+    <div class="flex items-center gap-2">
+        <span>Rows per page:</span>
+        <button class="flex items-center gap-1 font-medium hover:text-on-surface">
+            {{ page.size }} <span class="material-symbols-outlined text-[18px]">arrow_drop_down</span>
+        </button>
+    </div>
+    <div>{{ page.number * page.size + 1 }}–{{ (page.number * page.size) + page.content.length }} of {{ page.totalElements }}</div>
+    <div class="flex items-center gap-2">
+        <button class="text-outline hover:text-on-surface disabled:opacity-50" [disabled]="page.number === 0" (click)="loadPage(page.number - 1)"><span class="material-symbols-outlined">chevron_left</span></button>
+        <button class="text-outline hover:text-on-surface disabled:opacity-50" [disabled]="page.number >= page.totalPages - 1" (click)="loadPage(page.number + 1)"><span class="material-symbols-outlined">chevron_right</span></button>
+    </div>
+</div>
+</div>

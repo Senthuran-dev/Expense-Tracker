@@ -1,0 +1,102 @@
+<form [formGroup]="categoryForm" (ngSubmit)="onSubmit()" class="flex flex-col h-full bg-surface-container-lowest rounded-xl overflow-hidden max-h-[90vh]">
+<!-- Header -->
+<div class="px-6 py-5 border-b border-outline-variant/20 flex items-start justify-between bg-surface">
+    <div class="flex flex-col gap-1">
+        <h2 class="font-headline-md text-headline-md text-primary-container m-0 p-0">{{ isEditMode ? 'Edit Category' : 'Create Custom Category' }}</h2>
+        <p class="font-body-md text-body-md text-on-surface-variant text-[13px] leading-snug">Custom categories will appear alongside system categories in expense forms.</p>
+    </div>
+    <button type="button" (click)="onCancel()" aria-label="Close dialog" class="text-on-surface-variant hover:text-on-surface transition-colors focus:outline-none focus:ring-2 focus:ring-secondary rounded-full p-1 -mt-1 -mr-1">
+        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">close</span>
+    </button>
+</div>
+<!-- Body (Scrollable) -->
+<div class="p-6 flex-1 overflow-y-auto flex flex-col gap-6">
+    <!-- Field 1: Category Name -->
+    <div class="flex flex-col gap-2">
+        <label class="font-title-sm text-title-sm text-on-surface" for="categoryName">Category Name</label>
+        <div class="relative">
+            <input formControlName="name" class="w-full h-[48px] px-4 bg-surface-container-lowest border border-outline-variant rounded-lg text-on-surface font-body-lg text-body-lg focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-all placeholder:text-outline"
+                   [class.border-error]="categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched"
+                   id="categoryName" placeholder="e.g. Coffee & Drinks" type="text"/>
+        </div>
+        <div class="flex justify-end">
+            <span class="font-data-mono text-data-mono text-[12px]" [ngClass]="{'text-error': categoryForm.get('name')?.hasError('maxlength'), 'text-on-surface-variant': !categoryForm.get('name')?.hasError('maxlength')}">
+                {{ categoryForm.get('name')?.value?.length || 0 }} / 50
+            </span>
+        </div>
+    </div>
+    <!-- Field 2: Icon -->
+    <div class="flex flex-col gap-2">
+        <label class="font-title-sm text-title-sm text-on-surface">Icon</label>
+        <div class="grid grid-cols-6 gap-3">
+            <!-- Icon Grid -->
+            <button *ngFor="let icon of availableIcons"
+                    type="button"
+                    (click)="selectIcon(icon)"
+                    class="w-[44px] h-[44px] rounded-lg border flex items-center justify-center transition-colors"
+                    [ngClass]="{
+                        'border-none bg-[#00897B] text-white ring-2 ring-secondary ring-offset-2 ring-offset-surface-container-lowest shadow-sm': categoryForm.get('icon')?.value === icon,
+                        'border-outline-variant text-on-surface-variant hover:bg-surface-container-low': categoryForm.get('icon')?.value !== icon
+                    }">
+                <span class="material-symbols-outlined" [style.font-variation-settings]="categoryForm.get('icon')?.value === icon ? '\'FILL\' 1' : '\'FILL\' 0'">{{ icon }}</span>
+            </button>
+        </div>
+    </div>
+    <!-- Field 3: Colour -->
+    <div class="flex flex-col gap-2">
+        <label class="font-title-sm text-title-sm text-on-surface">Colour</label>
+        <div class="flex flex-wrap gap-2">
+            <!-- Color Swatches -->
+            <button *ngFor="let color of availableColors"
+                    type="button"
+                    (click)="selectColor(color)"
+                    class="w-[32px] h-[32px] rounded-full border border-black/10 flex items-center justify-center transition-transform"
+                    [style.backgroundColor]="color"
+                    [ngClass]="{
+                        'ring-2 ring-offset-2 ring-offset-surface-container-lowest shadow-sm': categoryForm.get('color')?.value === color,
+                        'hover:scale-110': categoryForm.get('color')?.value !== color
+                    }"
+                    [style.ringColor]="color">
+                <span *ngIf="categoryForm.get('color')?.value === color" class="material-symbols-outlined text-white text-[16px] font-bold">check</span>
+            </button>
+        </div>
+        <div class="mt-2 flex items-center gap-2">
+            <span class="font-data-mono text-data-mono text-on-surface-variant uppercase bg-surface-container px-2 py-1 rounded text-[12px] border border-outline-variant/30">{{ categoryForm.get('color')?.value }}</span>
+        </div>
+    </div>
+    <!-- Preview Box -->
+    <div class="flex flex-col gap-2 mt-2">
+        <label class="font-label-caps text-label-caps text-on-surface-variant tracking-wider">PREVIEW</label>
+        <div class="bg-[#F5F7FA] p-4 rounded-lg border border-outline-variant/20 flex gap-6 items-center">
+            <!-- Preview Chip -->
+            <div class="flex-1 flex justify-center items-center">
+                <div class="bg-surface-container-lowest border px-3 py-1.5 rounded-full flex items-center gap-2 shadow-sm"
+                     [style.borderColor]="categoryForm.get('color')?.value + '40'">
+                    <div class="w-5 h-5 rounded-full flex items-center justify-center"
+                         [style.backgroundColor]="categoryForm.get('color')?.value">
+                        <span class="material-symbols-outlined text-white text-[12px]" style="font-variation-settings: 'FILL' 1;">{{ categoryForm.get('icon')?.value }}</span>
+                    </div>
+                    <span class="font-body-md text-body-md text-on-surface font-medium">{{ categoryForm.get('name')?.value || 'Preview' }}</span>
+                </div>
+            </div>
+            <!-- Preview Tile -->
+            <div class="flex-1 flex justify-center items-center border-l border-outline-variant/20 pl-6">
+                <div class="w-[80px] h-[80px] bg-surface-container-lowest rounded-lg border shadow-sm flex flex-col items-center justify-center gap-1 relative overflow-hidden transition-colors"
+                     [style.borderColor]="categoryForm.get('color')?.value + '40'">
+                    <span class="material-symbols-outlined text-[24px]" [style.color]="categoryForm.get('color')?.value" style="font-variation-settings: 'FILL' 1;">{{ categoryForm.get('icon')?.value }}</span>
+                    <span class="font-body-md text-on-surface text-[10px] leading-tight text-center px-1 truncate w-full">{{ categoryForm.get('name')?.value || 'Preview' }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Footer -->
+<div class="px-6 py-4 border-t border-outline-variant/20 bg-surface flex justify-end gap-3 shrink-0">
+    <button type="button" (click)="onCancel()" class="px-4 py-2 font-body-md text-body-md font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-outline-variant">
+        Cancel
+    </button>
+    <button type="submit" [disabled]="categoryForm.invalid" class="px-4 py-2 bg-[#00897B] text-white font-body-md text-body-md font-medium rounded-lg hover:bg-[#00796B] transition-colors focus:outline-none focus:ring-2 focus:ring-[#00897B] focus:ring-offset-2 focus:ring-offset-surface shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+        {{ isEditMode ? 'Save Category' : 'Create Category' }}
+    </button>
+</div>
+</form>

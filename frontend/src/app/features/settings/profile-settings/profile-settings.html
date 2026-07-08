@@ -1,0 +1,113 @@
+<div class="mb-stack_lg flex items-center justify-between">
+    <h1 class="text-display-lg md:text-display-lg font-display-lg text-on-surface">Profile & Settings</h1>
+</div>
+
+<!-- Snackbar (Success/Error messages) -->
+<div *ngIf="successMessage || errorMessage" [ngClass]="successMessage ? 'bg-[#E8F5E9] border-[#A5D6A7] text-[#1B5E20]' : 'bg-[#FFEBEE] border-[#EF9A9A] text-[#B71C1C]'" class="mb-6 flex items-center gap-3 border px-4 py-3 rounded-lg shadow-sm">
+    <span class="material-symbols-outlined">{{ successMessage ? 'check_circle' : 'error' }}</span>
+    <p class="font-body-md text-body-md flex-1 m-0">{{ successMessage || errorMessage }}</p>
+    <button (click)="successMessage = null; errorMessage = null" class="font-title-sm text-title-sm uppercase hover:bg-black/5 px-2 py-1 rounded transition-colors focus:outline-none">Dismiss</button>
+</div>
+
+<!-- 2-Column Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-[24px]">
+    <!-- LEFT COLUMN (35%) -->
+    <div class="md:col-span-4 lg:col-span-4 flex flex-col gap-[24px]">
+        <!-- Profile Card -->
+        <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant p-[24px] flex flex-col items-center text-center">
+            <div class="w-[80px] h-[80px] rounded-full bg-primary flex items-center justify-center text-on-primary text-[32px] font-bold mb-4 shadow-sm relative overflow-hidden">
+                {{ (authService.currentUser$ | async)?.name?.charAt(0) | uppercase }}
+                <div class="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent pointer-events-none"></div>
+            </div>
+            <h2 class="text-headline-md font-headline-md text-primary mb-1">{{ (authService.currentUser$ | async)?.name }}</h2>
+            <p class="text-body-md font-body-md text-on-surface-variant mb-1">{{ (authService.currentUser$ | async)?.email }}</p>
+            
+            <button class="mt-6 text-secondary font-title-sm text-title-sm hover:text-on-secondary-container transition-colors flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">photo_camera</span>
+                Edit Profile Photo
+            </button>
+        </div>
+
+        <div class="hidden lg:block bg-gradient-to-br from-surface-container-low to-surface-container rounded-xl p-6 border border-outline-variant/50 relative overflow-hidden h-32">
+            <div class="absolute -right-8 -top-8 w-24 h-24 bg-primary-fixed rounded-full blur-2xl opacity-50"></div>
+            <p class="text-label-caps font-label-caps text-on-surface-variant uppercase tracking-wider">Account Status</p>
+            <p class="text-title-sm font-title-sm text-secondary mt-1 flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                Fully Verified
+            </p>
+        </div>
+    </div>
+
+    <!-- RIGHT COLUMN (65%) -->
+    <div class="md:col-span-8 lg:col-span-8 flex flex-col gap-[24px]">
+        <!-- Card 1: Personal Information -->
+        <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant overflow-hidden">
+            <div class="p-[24px] border-b border-outline-variant flex justify-between items-center bg-surface-bright">
+                <h3 class="text-title-sm font-title-sm text-on-surface m-0">Personal Information</h3>
+                <button *ngIf="!isEditingProfile" (click)="toggleEditProfile()" class="border border-primary-container text-primary-container px-4 py-1.5 rounded text-title-sm font-title-sm hover:bg-primary-container hover:text-on-primary transition-colors flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[16px]">edit</span> Edit
+                </button>
+                <button *ngIf="isEditingProfile" (click)="toggleEditProfile()" class="text-on-surface-variant px-4 py-1.5 rounded text-title-sm font-title-sm hover:bg-surface-variant transition-colors">
+                    Cancel
+                </button>
+            </div>
+            
+            <div *ngIf="!isEditingProfile" class="p-[24px] grid grid-cols-1 gap-[24px]">
+                <div>
+                    <label class="block text-label-caps font-label-caps text-on-surface-variant mb-1">Full Name</label>
+                    <p class="text-body-md font-body-md text-on-surface p-2 bg-surface-container-low rounded border border-transparent m-0">{{ (authService.currentUser$ | async)?.name }}</p>
+                </div>
+                <div>
+                    <label class="block text-label-caps font-label-caps text-outline mb-1">Email Address</label>
+                    <p class="text-body-md font-body-md text-outline p-2 bg-surface-container-low rounded border border-transparent flex items-center justify-between m-0">
+                        {{ (authService.currentUser$ | async)?.email }}
+                        <span class="material-symbols-outlined text-[16px] text-outline">lock</span>
+                    </p>
+                </div>
+            </div>
+
+            <form *ngIf="isEditingProfile" [formGroup]="profileForm" (ngSubmit)="updateProfile()" class="p-[24px] grid grid-cols-1 gap-[24px]">
+                <div>
+                    <label class="block text-label-caps font-label-caps text-on-surface-variant mb-1">Full Name</label>
+                    <input formControlName="name" class="w-full bg-surface-container-lowest border border-outline-variant rounded p-2 text-body-md font-body-md text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-all" type="text"/>
+                </div>
+                <div>
+                    <label class="block text-label-caps font-label-caps text-outline mb-1">Email Address (Read-only)</label>
+                    <input disabled [value]="(authService.currentUser$ | async)?.email" class="w-full bg-surface-container-low border border-outline-variant rounded p-2 text-body-md font-body-md text-outline" type="text"/>
+                </div>
+                <div class="flex justify-end mt-2">
+                    <button type="submit" [disabled]="profileForm.invalid" class="bg-primary text-on-primary px-6 py-2 rounded text-title-sm font-title-sm hover:bg-primary-container transition-colors shadow-sm disabled:opacity-50">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Card 2: Change Password -->
+        <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant overflow-hidden">
+            <div class="p-[24px] border-b border-outline-variant bg-surface-bright">
+                <h3 class="text-title-sm font-title-sm text-on-surface m-0">Change Password</h3>
+            </div>
+            <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" class="p-[24px] flex flex-col gap-[16px]">
+                <div>
+                    <label class="block text-label-caps font-label-caps text-on-surface-variant mb-1">Current Password</label>
+                    <input formControlName="currentPassword" class="w-full bg-surface-container-lowest border border-outline-variant rounded p-2 text-body-md font-body-md text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-all" type="password"/>
+                </div>
+                <div>
+                    <label class="block text-label-caps font-label-caps text-on-surface-variant mb-1">New Password</label>
+                    <input formControlName="newPassword" class="w-full bg-surface-container-lowest border border-outline-variant rounded p-2 text-body-md font-body-md text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-all" placeholder="Enter new password (min 8 chars)" type="password"/>
+                </div>
+                <div>
+                    <label class="block text-label-caps font-label-caps text-on-surface-variant mb-1">Confirm New Password</label>
+                    <input formControlName="confirmPassword" class="w-full bg-surface-container-lowest border border-outline-variant rounded p-2 text-body-md font-body-md text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-all" placeholder="Confirm new password" type="password"/>
+                    <div *ngIf="passwordForm.errors?.['mismatch'] && passwordForm.get('confirmPassword')?.touched" class="text-error text-[12px] mt-1">Passwords do not match</div>
+                </div>
+                <div class="flex justify-end mt-2">
+                    <button type="submit" [disabled]="passwordForm.invalid" class="bg-secondary text-on-secondary px-6 py-2 rounded text-title-sm font-title-sm hover:bg-on-secondary-container transition-colors shadow-sm disabled:opacity-50">
+                        Update Password
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
