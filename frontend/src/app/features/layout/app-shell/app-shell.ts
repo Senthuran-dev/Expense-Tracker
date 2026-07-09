@@ -12,4 +12,13 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class AppShell {
   public authService = inject(AuthService);
+  public isSidebarOpen = false;
+
+  toggleSidebar() {
+    this.isSidebarOpen = !this.isSidebarOpen;
+  }
+
+  closeSidebar() {
+    this.isSidebarOpen = false;
+  }
 }

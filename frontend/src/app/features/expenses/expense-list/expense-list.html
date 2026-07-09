@@ -3,7 +3,7 @@
 <!-- Search Input -->
 <div class="relative w-full md:w-[260px]">
 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
-<input class="w-full pl-10 pr-4 py-2 border border-outline-variant rounded bg-surface focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent font-body-md text-body-md text-on-surface" placeholder="Search description..." type="text"/>
+<input [(ngModel)]="searchTerm" (keyup.enter)="onSearch()" class="w-full pl-10 pr-4 py-2 border border-outline-variant rounded bg-surface focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent font-body-md text-body-md text-on-surface" placeholder="Search description (Press Enter)" type="text"/>
 </div>
 <!-- Middle Filters -->
 <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
@@ -35,24 +35,24 @@
 <!-- 2. SUMMARY CHIPS -->
 <div class="flex items-center gap-3 mb-6">
 <div class="px-3 py-1.5 border border-outline-variant rounded bg-surface font-body-md text-body-md text-on-surface-variant">
-                    47 expenses
+                    {{ totalExpensesCount }} expenses
                 </div>
 <div class="px-3 py-1.5 border border-secondary rounded bg-secondary/5 font-title-sm text-title-sm text-secondary font-bold">
-                    Total: LKR 87,450
+                    Total: {{ totalSpent | currency:'LKR ':'symbol':'1.0-0' }}
                 </div>
 <div class="px-3 py-1.5 border border-outline-variant rounded bg-surface font-body-md text-body-md text-on-surface-variant">
-                    Avg per day: LKR 2,915
+                    Avg per day: {{ avgPerDay | currency:'LKR ':'symbol':'1.0-0' }}
                 </div>
 </div>
 <!-- EXPENSES TABLE AREA -->
 <div class="bg-surface shadow-sm rounded-lg border border-outline-variant overflow-hidden">
 <!-- 4. BATCH ACTION BAR -->
-<div class="bg-primary-fixed px-4 py-3 border-b border-primary-fixed-dim flex items-center justify-between">
-<span class="font-body-md text-body-md text-on-primary-fixed">1 selected</span>
+<div *ngIf="selectedIds.size > 0" class="bg-primary-fixed px-4 py-3 border-b border-primary-fixed-dim flex items-center justify-between">
+<span class="font-body-md text-body-md text-on-primary-fixed">{{ selectedIds.size }} selected</span>
 <div class="flex items-center gap-4">
-<button class="font-title-sm text-title-sm text-primary hover:underline">Delete selected</button>
+<button class="font-title-sm text-title-sm text-primary hover:underline" (click)="deleteSelected()">Delete selected</button>
 <span class="text-outline-variant">|</span>
-<button class="font-title-sm text-title-sm text-primary hover:underline">Export selected</button>
+<button class="font-title-sm text-title-sm text-primary hover:underline" (click)="openExportDialog()">Export selected</button>
 </div>
 </div>
 <!-- 3. EXPENSES TABLE -->
@@ -60,7 +60,7 @@
 <table class="w-full text-left border-collapse">
 <thead>
 <tr class="border-b border-outline-variant bg-surface-container-lowest">
-<th class="p-4 w-12"><input checked="" class="rounded border-outline text-secondary focus:ring-secondary w-4 h-4 cursor-pointer" type="checkbox"/></th>
+<th class="p-4 w-12"><input [checked]="isAllSelected()" (change)="toggleAll()" class="rounded border-outline text-secondary focus:ring-secondary w-4 h-4 cursor-pointer" type="checkbox"/></th>
 <th class="p-4 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Date</th>
 <th class="p-4 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Category</th>
 <th class="p-4 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Description</th>
@@ -73,7 +73,7 @@
         <td colspan="6" class="p-8 text-center text-on-surface-variant">No expenses found.</td>
     </tr>
     <tr *ngFor="let expense of (expensesPage$ | async)?.content" class="border-b border-outline-variant/50 hover:bg-surface-container-low transition-colors bg-surface-container-lowest">
-        <td class="p-4"><input class="rounded border-outline text-secondary focus:ring-secondary w-4 h-4 cursor-pointer" type="checkbox"/></td>
+        <td class="p-4"><input [checked]="selectedIds.has(expense.id)" (change)="toggleSelection(expense.id)" class="rounded border-outline text-secondary focus:ring-secondary w-4 h-4 cursor-pointer" type="checkbox"/></td>
         <td class="p-4 text-on-surface font-data-mono">{{ expense.expenseDate | date:'mediumDate' }}</td>
         <td class="p-4">
             <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded font-label-caps text-[11px] uppercase border"

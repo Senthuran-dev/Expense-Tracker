@@ -60,4 +60,30 @@ public class AuthService {
                 .email(user.getEmail())
                 .build();
     }
+
+    public AuthResponse updateProfile(String email, com.example.backend.dto.request.UpdateProfileRequest request) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        user.setName(request.getName());
+        userRepository.save(user);
+
+        return AuthResponse.builder()
+                .token(jwtService.generateToken(user))
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .build();
+    }
+
+    public void changePassword(String email, com.example.backend.dto.request.ChangePasswordRequest request) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPasswordHash())) {
+            throw new IllegalArgumentException("Incorrect current password");
+        }
+
+        user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+    }
 }

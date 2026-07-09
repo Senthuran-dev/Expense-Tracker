@@ -1,6 +1,9 @@
 <div class="bg-background text-on-surface font-body-lg min-h-screen flex">
 <!-- SideNavBar -->
-<nav aria-label="Sidebar Navigation" class="bg-primary dark:bg-primary fixed left-0 top-0 h-full w-[240px] flex flex-col py-6 z-20">
+<!-- Overlay for mobile -->
+<div *ngIf="isSidebarOpen" class="fixed inset-0 bg-black/50 z-10 md:hidden" (click)="closeSidebar()"></div>
+<nav aria-label="Sidebar Navigation" class="bg-primary dark:bg-primary fixed left-0 top-0 h-full w-[240px] flex flex-col py-6 z-20 transition-transform duration-300 ease-in-out"
+     [ngClass]="isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
 <!-- Logo -->
 <div class="px-6 mb-8 flex items-center gap-3">
 <span class="material-symbols-outlined text-secondary-fixed text-3xl" data-icon="account_balance_wallet" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
@@ -75,11 +78,11 @@
 </div>
 </nav>
 <!-- Main Content Area -->
-<div class="flex-1 ml-[240px] flex flex-col min-h-screen">
+<div class="flex-1 ml-0 md:ml-[240px] flex flex-col min-h-screen transition-all duration-300">
 <!-- TopNavBar -->
-<header class="bg-surface dark:bg-surface-dim fixed top-0 right-0 w-[calc(100%-240px)] h-16 border-b border-outline-variant dark:border-outline shadow-sm flex items-center justify-between px-6 z-10">
+<header class="bg-surface dark:bg-surface-dim fixed top-0 right-0 w-full md:w-[calc(100%-240px)] h-16 border-b border-outline-variant dark:border-outline shadow-sm flex items-center justify-between px-6 z-10 transition-all duration-300">
 <div class="flex items-center gap-4">
-<button aria-label="Open Menu" class="md:hidden text-on-surface hover:bg-surface-container-low p-2 rounded-full transition-colors">
+<button aria-label="Open Menu" class="md:hidden text-on-surface hover:bg-surface-container-low p-2 rounded-full transition-colors" (click)="toggleSidebar()">
 <span class="material-symbols-outlined" data-icon="menu">menu</span>
 </button>
 <h2 class="font-title-sm text-title-sm font-bold text-on-surface dark:text-on-surface !text-xl">Dashboard</h2>
