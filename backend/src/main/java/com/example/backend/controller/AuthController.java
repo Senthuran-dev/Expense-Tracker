@@ -25,4 +25,19 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
     }
+
+    @PutMapping("/me")
+    public ResponseEntity<AuthResponse> updateProfile(
+            @org.springframework.security.core.annotation.AuthenticationPrincipal org.springframework.security.core.userdetails.UserDetails userDetails,
+            @Valid @RequestBody com.example.backend.dto.request.UpdateProfileRequest request) {
+        return ResponseEntity.ok(authService.updateProfile(userDetails.getUsername(), request));
+    }
+
+    @PutMapping("/change-password")
+    public ResponseEntity<Void> changePassword(
+            @org.springframework.security.core.annotation.AuthenticationPrincipal org.springframework.security.core.userdetails.UserDetails userDetails,
+            @Valid @RequestBody com.example.backend.dto.request.ChangePasswordRequest request) {
+        authService.changePassword(userDetails.getUsername(), request);
+        return ResponseEntity.ok().build();
+    }
 }
