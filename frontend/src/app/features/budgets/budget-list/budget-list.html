@@ -2,7 +2,7 @@
 <!-- Page Header & Action -->
 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-stack_lg gap-4">
 <p class="font-body-md text-body-md text-outline">Set monthly spending limits per category and track your progress in real time.</p>
-<button class="bg-[#00897B] hover:bg-[#00796B] text-white font-title-sm text-title-sm h-[40px] px-4 rounded flex items-center gap-2 transition-colors active:scale-95">
+<button class="bg-secondary hover:bg-secondary-fixed-dim text-on-secondary font-title-sm text-title-sm h-[40px] px-4 rounded flex items-center gap-2 transition-colors active:scale-95">
 <span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
                         Set Budget
                     </button>
@@ -49,21 +49,21 @@
                 <h3 class="font-title-sm text-title-sm text-on-surface">{{ budget.categoryName }}</h3>
             </div>
             
-            <span *ngIf="budget.percentageUsed! <= 85" class="inline-flex items-center px-2 py-1 rounded bg-[#E8F5E9] text-[#2E7D32] font-label-caps text-[10px] uppercase font-bold">On Track</span>
+            <span *ngIf="budget.percentageUsed! <= 85" class="inline-flex items-center px-2 py-1 rounded bg-success-container text-success font-label-caps text-[10px] uppercase font-bold">On Track</span>
             
-            <span *ngIf="budget.percentageUsed! > 85 && budget.percentageUsed! <= 100" class="inline-flex items-center px-2 py-1 rounded bg-[#FFF3E0] text-[#E65100] font-label-caps text-[10px] uppercase font-bold gap-1">
+            <span *ngIf="budget.percentageUsed! > 85 && budget.percentageUsed! <= 100" class="inline-flex items-center px-2 py-1 rounded bg-warning-container text-warning font-label-caps text-[10px] uppercase font-bold gap-1">
                 <span class="material-symbols-outlined text-[12px]">warning</span> Nearing Limit
             </span>
             
-            <span *ngIf="budget.percentageUsed! > 100" class="inline-flex items-center px-2 py-1 rounded bg-[#FFEBEE] text-[#C62828] font-label-caps text-[10px] uppercase font-bold gap-1">
+            <span *ngIf="budget.percentageUsed! > 100" class="inline-flex items-center px-2 py-1 rounded bg-error-container text-error font-label-caps text-[10px] uppercase font-bold gap-1">
                 <span class="material-symbols-outlined text-[12px]">close</span> Over Budget
             </span>
         </div>
         
         <div class="mb-2 flex justify-between items-end font-data-mono" [class.pl-2]="budget.percentageUsed! > 100">
-            <span class="font-bold" [class.text-[#E53935]]="budget.percentageUsed! > 100" [class.text-on-surface]="budget.percentageUsed! <= 100">
+            <span class="font-bold" [class.text-error]="budget.percentageUsed! > 100" [class.text-on-surface]="budget.percentageUsed! <= 100">
                 {{ budget.spentAmount | currency:'LKR ':'symbol':'1.0-0' }}
-                <span class="font-body-md text-xs font-normal" [class.text-[#E53935]/80]="budget.percentageUsed! > 100" [class.text-outline]="budget.percentageUsed! <= 100">spent</span>
+                <span class="font-body-md text-xs font-normal" [class.text-error/80]="budget.percentageUsed! > 100" [class.text-outline]="budget.percentageUsed! <= 100">spent</span>
             </span>
             <span class="text-outline text-sm">{{ budget.budgetAmount | currency:'LKR ':'symbol':'1.0-0' }}</span>
         </div>
@@ -71,16 +71,16 @@
         <div class="w-full bg-[#EEEEEE] rounded-full h-2.5 mb-4 overflow-hidden" [class.ml-2]="budget.percentageUsed! > 100">
             <div class="h-2.5 rounded-full" 
                  [style.width]="(budget.percentageUsed! > 100 ? 100 : budget.percentageUsed!) + '%'"
-                 [class.bg-[#00897B]]="budget.percentageUsed! <= 85"
-                 [class.bg-[#FB8C00]]="budget.percentageUsed! > 85 && budget.percentageUsed! <= 100"
-                 [class.bg-[#E53935]]="budget.percentageUsed! > 100"
+                 [class.bg-success]="budget.percentageUsed! <= 85"
+                 [class.bg-warning]="budget.percentageUsed! > 85 && budget.percentageUsed! <= 100"
+                 [class.bg-error]="budget.percentageUsed! > 100"
                  [class.progress-striped]="budget.percentageUsed! > 100">
             </div>
         </div>
         
         <div class="mt-auto pt-4 border-t border-[#EEEEEE]" [class.pl-2]="budget.percentageUsed! > 100">
             <p *ngIf="budget.percentageUsed! <= 100" class="font-body-md text-body-md text-outline">{{ budget.remainingAmount | currency:'LKR ':'symbol':'1.0-0' }} remaining</p>
-            <p *ngIf="budget.percentageUsed! > 100" class="font-body-md text-body-md font-medium text-[#E53935]">{{ (budget.spentAmount! - budget.budgetAmount!) | currency:'LKR ':'symbol':'1.0-0' }} overspent</p>
+            <p *ngIf="budget.percentageUsed! > 100" class="font-body-md text-body-md font-medium text-error">{{ (budget.spentAmount! - budget.budgetAmount!) | currency:'LKR ':'symbol':'1.0-0' }} overspent</p>
         </div>
     </div>
 </div>

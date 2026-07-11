@@ -3,10 +3,11 @@
 </div>
 
 <!-- Snackbar (Success/Error messages) -->
-<div *ngIf="successMessage || errorMessage" [ngClass]="successMessage ? 'bg-[#E8F5E9] border-[#A5D6A7] text-[#1B5E20]' : 'bg-[#FFEBEE] border-[#EF9A9A] text-[#B71C1C]'" class="mb-6 flex items-center gap-3 border px-4 py-3 rounded-lg shadow-sm">
-    <span class="material-symbols-outlined">{{ successMessage ? 'check_circle' : 'error' }}</span>
+<div *ngIf="successMessage || errorMessage" [ngClass]="successMessage ? 'bg-success-container border-success/30 text-on-success-container' : 'bg-error-container border-error/30 text-on-error-container'" class="mb-6 flex items-center gap-3 border px-4 py-3 rounded-lg shadow-sm">
+    <span class="material-symbols-outlined text-success" *ngIf="successMessage">check_circle</span>
+    <span class="material-symbols-outlined text-error" *ngIf="errorMessage">error</span>
     <p class="font-body-md text-body-md flex-1 m-0">{{ successMessage || errorMessage }}</p>
-    <button (click)="successMessage = null; errorMessage = null" class="font-title-sm text-title-sm uppercase hover:bg-black/5 px-2 py-1 rounded transition-colors focus:outline-none">Dismiss</button>
+    <button (click)="successMessage = null; errorMessage = null" class="font-title-sm text-title-sm uppercase hover:bg-black/5 px-2 py-1 rounded transition-colors focus:outline-none" [ngClass]="successMessage ? 'text-on-success-container' : 'text-on-error-container'">Dismiss</button>
 </div>
 
 <!-- 2-Column Grid Layout -->

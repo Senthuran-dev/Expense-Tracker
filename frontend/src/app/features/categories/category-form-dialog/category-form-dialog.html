@@ -35,7 +35,7 @@
                     (click)="selectIcon(icon)"
                     class="w-[44px] h-[44px] rounded-lg border flex items-center justify-center transition-colors"
                     [ngClass]="{
-                        'border-none bg-[#00897B] text-white ring-2 ring-secondary ring-offset-2 ring-offset-surface-container-lowest shadow-sm': categoryForm.get('icon')?.value === icon,
+                        'border-none bg-secondary text-on-secondary ring-2 ring-secondary ring-offset-2 ring-offset-surface-container-lowest shadow-sm': categoryForm.get('icon')?.value === icon,
                         'border-outline-variant text-on-surface-variant hover:bg-surface-container-low': categoryForm.get('icon')?.value !== icon
                     }">
                 <span class="material-symbols-outlined" [style.font-variation-settings]="categoryForm.get('icon')?.value === icon ? '\'FILL\' 1' : '\'FILL\' 0'">{{ icon }}</span>
@@ -95,7 +95,7 @@
     <button type="button" (click)="onCancel()" class="px-4 py-2 font-body-md text-body-md font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-outline-variant">
         Cancel
     </button>
-    <button type="submit" [disabled]="categoryForm.invalid" class="px-4 py-2 bg-[#00897B] text-white font-body-md text-body-md font-medium rounded-lg hover:bg-[#00796B] transition-colors focus:outline-none focus:ring-2 focus:ring-[#00897B] focus:ring-offset-2 focus:ring-offset-surface shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+    <button type="submit" [disabled]="categoryForm.invalid" class="px-4 py-2 bg-secondary text-on-secondary font-body-md text-body-md font-medium rounded-lg hover:bg-secondary-fixed-dim transition-colors focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-surface shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
         {{ isEditMode ? 'Save Category' : 'Create Category' }}
     </button>
 </div>

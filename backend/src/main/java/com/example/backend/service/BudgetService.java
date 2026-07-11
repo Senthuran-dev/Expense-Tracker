@@ -29,6 +29,9 @@ public class BudgetService {
         User user = getUser(email);
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("Category not found"));
+        if (category.getUser() != null && !category.getUser().getId().equals(user.getId())) {
+            throw new IllegalArgumentException("Category does not belong to you");
+        }
 
         return budgetRepository.findByUserIdAndCategoryIdAndMonthAndYear(user.getId(), category.getId(), request.getMonth(), request.getYear())
                 .map(existingBudget -> {

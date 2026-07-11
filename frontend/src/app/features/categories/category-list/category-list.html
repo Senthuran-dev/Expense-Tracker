@@ -4,7 +4,7 @@
 <h2 class="font-display-lg text-display-lg text-primary-container">Categories</h2>
 <p class="font-body-md text-body-md text-on-surface-variant mt-1">Manage your spending categories. System categories cannot be edited.</p>
 </div>
-<button (click)="openDialog()" class="bg-[#00897B] text-white px-4 py-2 rounded-xl font-title-sm text-title-sm flex items-center justify-center hover:bg-[#00796B] transition-colors whitespace-nowrap self-start sm:self-auto shadow-sm">
+<button (click)="openDialog()" class="bg-secondary text-on-secondary px-4 py-2 rounded-xl font-title-sm text-title-sm flex items-center justify-center hover:bg-secondary-fixed-dim transition-colors whitespace-nowrap self-start sm:self-auto shadow-sm">
 <span class="material-symbols-outlined mr-2 text-[20px]">add</span>
                     Create Category
                 </button>
@@ -39,7 +39,7 @@
 <!-- Card Header -->
 <div class="px-container_padding py-4 border-b border-surface-variant flex items-center justify-between bg-surface-container-low">
 <h3 class="font-title-sm text-title-sm text-on-surface">My Custom Categories <span class="font-body-md text-outline font-normal">({{ (customCategories$ | async)?.length || 0 }} categories)</span></h3>
-<button (click)="openDialog()" class="text-[#00897B] font-title-sm text-[14px] hover:underline flex items-center gap-1">
+<button (click)="openDialog()" class="text-secondary font-title-sm text-[14px] hover:underline flex items-center gap-1">
 <span class="material-symbols-outlined text-[18px]">add</span>
                         Create Category
                     </button>
@@ -59,7 +59,7 @@
             <button (click)="openDialog(cat.id)" aria-label="Edit category" class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-variant rounded-full transition-colors">
                 <span class="material-symbols-outlined text-[20px]">edit</span>
             </button>
-            <button (click)="deleteCategory(cat.id)" aria-label="Delete category" class="p-2 text-on-surface-variant hover:text-[#E53935] hover:bg-[#E53935]/10 rounded-full transition-colors">
+            <button (click)="deleteCategory(cat.id)" aria-label="Delete category" class="p-2 text-on-surface-variant hover:text-error hover:bg-error/10 rounded-full transition-colors">
                 <span class="material-symbols-outlined text-[20px]">delete</span>
             </button>
         </div>
