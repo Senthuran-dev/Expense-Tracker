@@ -1,59 +1,134 @@
-# Frontend
+# Expense Tracker — Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.15.
+Angular SPA for the Expense Tracker application, built with Angular 21.2 (standalone components), Tailwind CSS, Angular Material, and Chart.js.
 
-## Development server
+## Prerequisites
 
-To start a local development server, run:
+| Tool | Version |
+|---|---|
+| Node.js | 18+ |
+| npm | 9+ |
 
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Quick Start
 
 ```bash
-ng generate component component-name
+# Install dependencies
+npm install
+
+# Start development server
+npm start
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+The app opens at `http://localhost:4200/` and will automatically reload on source file changes.
 
-```bash
-ng generate --help
+## Project Structure
+
+```
+src/
+├── main.ts                        # Bootstrap entry point
+├── index.html                     # HTML shell
+├── styles.scss                    # Global styles
+├── environments/
+│   └── environment.ts             # API base URL config
+└── app/
+    ├── app.ts                     # Root component
+    ├── app.routes.ts              # Route definitions
+    ├── app.config.ts              # Providers (HTTP, routing)
+    ├── core/                      # Singleton services & guards
+    │   ├── services/
+    │   │   ├── auth.service.ts        # JWT auth, profile, password
+    │   │   ├── analytics.service.ts   # Charts & analytics data
+    │   │   ├── expense.service.ts     # Expense CRUD & export
+    │   │   ├── budget.service.ts      # Budget CRUD & summary
+    │   │   └── category.service.ts    # Category CRUD
+    │   ├── guards/
+    │   │   └── auth.guard.ts          # Route protection
+    │   └── interceptors/
+    │       └── jwt.interceptor.ts     # Auto token injection
+    ├── features/                  # Lazy-loaded feature modules
+    │   ├── auth/                  # Login, Register
+    │   ├── layout/                # AppShell (navbar + sidebar layout)
+    │   ├── dashboard/             # Overview with budget progress
+    │   ├── expenses/              # List, Form Dialog, Export Dialog
+    │   ├── budgets/               # List, Budget Form Dialog
+    │   ├── categories/            # List, Category Form Dialog
+    │   ├── analytics/             # Charts Dashboard (pie, bar, line)
+    │   └── settings/              # Profile Settings (name, password)
+    └── shared/                    # Reusable components
+        ├── components/
+        │   ├── navbar/
+        │   ├── sidebar/
+        │   └── confirm-dialog/
+        └── pipes/
 ```
 
-## Building
+## Technology Stack
 
-To build the project run:
+| Technology | Version | Purpose |
+|---|---|---|
+| Angular | 21.2 | SPA framework (standalone components) |
+| TypeScript | 5.9 | Type-safe JavaScript |
+| Tailwind CSS | 3.x | Utility-first CSS styling |
+| Angular Material | 21.2 | Dialogs and UI components |
+| Chart.js | 4.5 | Canvas-based charting |
+| ng2-charts | 10.0 | Angular wrapper for Chart.js |
+| RxJS | 7.8 | Reactive programming |
+| Vitest | 4.0 | Unit testing |
+| Prettier | 3.8 | Code formatter |
+
+## Available Scripts
+
+| Command | Description |
+|---|---|
+| `npm start` | Start development server (`ng serve`) |
+| `npm run build` | Production build to `dist/` |
+| `npm run watch` | Build in watch mode |
+| `npm test` | Run unit tests with Vitest |
+
+## Routing
+
+All authenticated routes are wrapped in the `AppShell` layout component (navbar + sidebar):
+
+| Path | Component | Auth |
+|---|---|---|
+| `/login` | Login | ❌ |
+| `/register` | Register | ❌ |
+| `/dashboard` | Overview | ✅ |
+| `/expenses` | Expense List | ✅ |
+| `/analytics` | Charts Dashboard | ✅ |
+| `/budgets` | Budget List | ✅ |
+| `/categories` | Category List | ✅ |
+| `/settings` | Profile Settings | ✅ |
+
+## Environment Configuration
+
+The API base URL is configured in `src/environments/environment.ts`:
+
+```typescript
+export const environment = {
+  production: false,
+  apiUrl: 'http://localhost:8080/api/v1'
+};
+```
+
+## Building for Production
 
 ```bash
 ng build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+The production build is output to the `dist/` directory, optimised for performance. Deployed to Netlify with SPA redirect rules configured in `netlify.toml`.
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## Code Scaffolding
 
 ```bash
-ng test
+ng generate component component-name
+ng generate --help
 ```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
 
 ## Additional Resources
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- [Angular CLI Reference](https://angular.dev/tools/cli)
+- [Angular Material](https://material.angular.io)
+- [Tailwind CSS](https://tailwindcss.com/docs)
+- [Chart.js](https://www.chartjs.org/docs)

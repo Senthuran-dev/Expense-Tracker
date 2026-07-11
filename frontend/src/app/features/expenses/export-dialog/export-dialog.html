@@ -87,8 +87,8 @@
 </article>
 
 <!-- Snackbar (Success message) -->
-<div *ngIf="successMessage" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-[#E8F5E9] border border-[#A5D6A7] text-[#1B5E20] px-4 py-3 rounded-lg shadow-lg min-w-[320px]">
-    <span class="material-symbols-outlined">check_circle</span>
+<div *ngIf="successMessage" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-success-container border border-success/30 text-on-success-container px-4 py-3 rounded-lg shadow-lg min-w-[320px]">
+    <span class="material-symbols-outlined text-success">check_circle</span>
     <p class="font-body-md text-body-md flex-1 m-0">{{ successMessage }}</p>
-    <button (click)="successMessage = null" class="font-title-sm text-title-sm uppercase text-[#1B5E20] hover:bg-[#C8E6C9] px-2 py-1 rounded transition-colors focus:outline-none">Dismiss</button>
+    <button (click)="successMessage = null" class="font-title-sm text-title-sm uppercase text-on-success-container hover:bg-success/20 px-2 py-1 rounded transition-colors focus:outline-none">Dismiss</button>
 </div>

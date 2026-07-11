@@ -13,13 +13,13 @@
         <label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Amount</label>
         <div class="relative flex items-center border border-outline-variant rounded bg-surface-container-lowest focus-within:border-secondary focus-within:ring-2 focus-within:ring-secondary/20 transition-all h-12"
              [class.border-error]="expenseForm.get('amount')?.invalid && expenseForm.get('amount')?.touched">
-            <span class="absolute left-4 font-label-caps text-label-caps text-outline uppercase">Rs.</span>
+            <span class="absolute left-4 font-label-caps text-label-caps text-outline uppercase">LKR</span>
             <input formControlName="amount" type="number" step="0.01" class="w-full h-full bg-transparent pr-4 pl-12 text-right font-data-mono text-data-mono text-on-surface focus:outline-none border-none ring-0"/>
         </div>
         <span *ngIf="expenseForm.get('amount')?.invalid && expenseForm.get('amount')?.touched" class="text-error text-xs">Valid amount is required</span>
     </div>
     <!-- Grid: Category & Date -->
-    <div class="grid grid-cols-2 gap-stack_md">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-stack_md">
         <!-- Category -->
         <div class="flex flex-col gap-stack_sm relative">
             <label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Category</label>

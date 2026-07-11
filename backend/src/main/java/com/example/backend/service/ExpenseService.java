@@ -50,6 +50,9 @@ public class ExpenseService {
         User user = getUser(email);
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("Category not found"));
+        if (category.getUser() != null && !category.getUser().getId().equals(user.getId())) {
+            throw new IllegalArgumentException("Category does not belong to you");
+        }
 
         Expense expense = Expense.builder()
                 .user(user)
@@ -67,6 +70,9 @@ public class ExpenseService {
         Expense expense = getExpenseIfOwned(email, id);
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("Category not found"));
+        if (category.getUser() != null && !category.getUser().getEmail().equals(email)) {
+            throw new IllegalArgumentException("Category does not belong to you");
+        }
 
         expense.setCategory(category);
         expense.setAmount(request.getAmount());

@@ -53,7 +53,15 @@ module.exports = {
               "on-error": "#ffffff",
               "surface-container-highest": "#e5e2e1",
               "on-primary-container": "#8690ee",
-              "surface-container": "#f0eded"
+              "surface-container": "#f0eded",
+              "success": "#2e7d32",
+              "success-container": "#e8f5e9",
+              "on-success": "#ffffff",
+              "on-success-container": "#0f3a15",
+              "warning": "#e65100",
+              "warning-container": "#fff3e0",
+              "on-warning": "#ffffff",
+              "on-warning-container": "#4e1b00"
       },
       "borderRadius": {
               "DEFAULT": "0.125rem",
