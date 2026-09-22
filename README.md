@@ -2,6 +2,8 @@
 
 A full-stack personal finance web application that allows users to track, categorise, budget, and analyse their spending habits with interactive charts, PDF/CSV exports, and secure JWT authentication.
 
+**Live Demo:** [https://YOUR-SITE.netlify.app](https://YOUR-SITE.netlify.app) | **Swagger API Docs:** [https://YOUR-BACKEND.onrender.com/swagger-ui.html](https://YOUR-BACKEND.onrender.com/swagger-ui.html)
+
 ## Technology Stack
 
 ### Frontend (Angular SPA)
@@ -82,7 +84,7 @@ flowchart LR
 4. The API starts at `http://localhost:8080`. Swagger UI available at `http://localhost:8080/swagger-ui.html`.
 
 ### 3. Frontend (Angular)
-1. Ensure you have Node.js 18+ and npm 9+ installed.
+1. Ensure you have Node.js 22+ and npm 9+ installed.
 2. Navigate to the `frontend` directory:
    ```bash
    cd frontend
