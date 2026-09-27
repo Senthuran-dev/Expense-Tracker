@@ -13,7 +13,21 @@ jobs:
     defaults:
       run:
         working-directory: backend
-    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: expense_tracker
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
     - uses: actions/checkout@v4
     
@@ -26,6 +40,13 @@ jobs:
         
     - name: Run Maven Tests
       run: mvn -B test
+      env:
+        SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/expense_tracker
+        SPRING_DATASOURCE_USERNAME: postgres
+        SPRING_DATASOURCE_PASSWORD: password
+        APP_JWT_SECRET: aW+ZDQNIKzG1V/4mN84QLG1LlXZaGzTHbMSU7byVdLA=
+        APP_JWT_EXPIRATION: 86400000
+        APP_CORS_ALLOWED_ORIGINS: http://localhost:4200
 
   frontend-test:
     name: Frontend Tests (Angular)
