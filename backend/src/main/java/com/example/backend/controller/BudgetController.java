@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import com.example.backend.dto.response.BudgetResponse;
 import com.example.backend.dto.request.SetBudgetRequest;
 import com.example.backend.model.Budget;
 import com.example.backend.service.AnalyticsService;
@@ -12,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/budgets")
@@ -22,18 +24,23 @@ public class BudgetController {
     private final AnalyticsService analyticsService;
 
     @GetMapping
-    public ResponseEntity<List<Budget>> getBudgets(
+    public ResponseEntity<List<BudgetResponse>> getBudgets(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam Short month,
             @RequestParam Short year) {
-        return ResponseEntity.ok(budgetService.getBudgets(userDetails.getUsername(), month, year));
+        List<BudgetResponse> responses = budgetService.getBudgets(userDetails.getUsername(), month, year)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 
     @PostMapping
-    public ResponseEntity<Budget> upsertBudget(
+    public ResponseEntity<BudgetResponse> upsertBudget(
             @AuthenticationPrincipal UserDetails userDetails,
             @Valid @RequestBody SetBudgetRequest request) {
-        return ResponseEntity.ok(budgetService.upsertBudget(userDetails.getUsername(), request));
+        Budget budget = budgetService.upsertBudget(userDetails.getUsername(), request);
+        return ResponseEntity.ok(mapToResponse(budget));
     }
 
     @DeleteMapping("/{id}")
@@ -50,5 +57,15 @@ public class BudgetController {
             @RequestParam Short month,
             @RequestParam Short year) {
         return ResponseEntity.ok(analyticsService.getBudgetVsActual(userDetails.getUsername(), month, year));
+    }
+
+    private BudgetResponse mapToResponse(Budget budget) {
+        return BudgetResponse.builder()
+                .id(budget.getId())
+                .category(budget.getCategory())
+                .amount(budget.getAmount())
+                .month(budget.getMonth())
+                .year(budget.getYear())
+                .build();
     }
 }
