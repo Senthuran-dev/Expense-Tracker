@@ -26,7 +26,7 @@ public class Category {
     @Column(nullable = false, length = 50)
     private String icon;
 
-    @Column(nullable = false, length = 7)
+    @Column(nullable = false, length = 7, columnDefinition = "CHAR(7)")
     private String color;
 
     @Builder.Default
