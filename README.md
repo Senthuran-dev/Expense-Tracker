@@ -2,8 +2,6 @@
 
 A full-stack personal finance web application that allows users to track, categorise, budget, and analyse their spending habits with interactive charts, PDF/CSV exports, and secure JWT authentication.
 
-**Live Demo:** [https://YOUR-SITE.netlify.app](https://YOUR-SITE.netlify.app) | **Swagger API Docs:** [https://YOUR-BACKEND.onrender.com/swagger-ui.html](https://YOUR-BACKEND.onrender.com/swagger-ui.html)
-
 ## Technology Stack
 
 ### Frontend (Angular SPA)
@@ -123,5 +121,27 @@ Base URL: `http://localhost:8080/api/v1`
 | `GET` | `/budgets/summary?month=&year=` | Budget vs. actual summary | ✅ |
 | `GET` | `/analytics/category-breakdown?month=&year=` | Category spending breakdown | ✅ |
 | `GET` | `/analytics/monthly-trend?year=` | Monthly spending trend | ✅ |
-| `GET` | `/analytics/daily?month=&year=` | Daily spending in month | ✅ |
 | `GET` | `/analytics/yearly-summary` | Year-to-date summary | ✅ |
+
+## Project Structure
+
+```text
+Expense Tracker/
+├── backend/                           # Spring Boot REST API
+│   ├── src/main/java/...              # Source code (Controllers, Services, Models, Repositories)
+│   ├── src/main/resources/            # Application config (application.yml) & Flyway migrations
+│   └── src/test/...                   # Unit & Integration tests
+├── frontend/                          # Angular SPA
+│   ├── src/app/                       # Angular application code
+│   │   ├── core/                      # Singleton services & guards
+│   │   ├── features/                  # Lazy-loaded feature modules (Auth, Dashboard, Expenses, etc.)
+│   │   └── shared/                    # Reusable components
+│   └── tailwind.config.js             # Tailwind styling configuration
+├── render.yaml                        # Render deployment configuration
+└── .gitignore
+```
+
+## Testing Strategy
+
+- **Frontend:** Components and services are tested using **Vitest** and the **Angular Testing Library**. Mocks are utilized extensively to isolate behaviors, such as mocking API responses and browser `localStorage`.
+- **Backend:** Testing is handled with **JUnit** and **Spring Boot Test**. Includes context load tests to verify beans and dependencies, and integration tests to validate JPA repositories and REST controllers.
