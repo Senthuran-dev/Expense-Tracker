@@ -10,6 +10,7 @@ export interface Category {
   icon: string;
   color: string;
   isDefault?: boolean;
+  default?: boolean;
 }
 
 @Injectable({

@@ -3,7 +3,7 @@
 <button aria-label="Open Menu" class="md:hidden text-on-surface hover:bg-surface-container-low p-2 rounded-full transition-colors" (click)="onToggleSidebar()">
 <span class="material-symbols-outlined" data-icon="menu">menu</span>
 </button>
-<h2 class="font-title-sm text-title-sm font-bold text-on-surface dark:text-on-surface !text-xl">Dashboard</h2>
+<h2 class="font-title-sm text-title-sm font-bold text-on-surface dark:text-on-surface !text-xl">{{ pageTitle }}</h2>
 </div>
 <div class="flex items-center gap-4">
 <!-- Actions -->
@@ -19,7 +19,7 @@
 <!-- Date Chip -->
 <button class="hidden md:flex items-center gap-1 border border-secondary text-secondary font-title-sm text-title-sm px-3 py-1.5 rounded-full hover:bg-secondary/10 transition-colors">
 <span class="material-symbols-outlined text-[18px]" data-icon="calendar_month">calendar_month</span>
-                    June 2025
+                    {{ currentMonthYear }}
                     <span class="material-symbols-outlined text-[18px]" data-icon="arrow_drop_down">arrow_drop_down</span>
 </button>
 <!-- Avatar Right -->

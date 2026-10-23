@@ -17,8 +17,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     @Query("SELECT e FROM Expense e WHERE e.user.id = :userId " +
            "AND (:categoryId IS NULL OR e.category.id = :categoryId) " +
-           "AND (cast(:startDate as date) IS NULL OR e.expenseDate >= :startDate) " +
-           "AND (cast(:endDate as date) IS NULL OR e.expenseDate <= :endDate) " +
+           "AND (:startDate IS NULL OR e.expenseDate >= :startDate) " +
+           "AND (:endDate IS NULL OR e.expenseDate <= :endDate) " +
            "AND (:search IS NULL OR LOWER(e.description) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<Expense> findByUserAndFilters(
             @Param("userId") Long userId,
@@ -29,8 +29,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             Pageable pageable);
 
     @Query("SELECT e FROM Expense e WHERE e.user.id = :userId " +
-           "AND (cast(:startDate as date) IS NULL OR e.expenseDate >= :startDate) " +
-           "AND (cast(:endDate as date) IS NULL OR e.expenseDate <= :endDate) " +
+           "AND (:startDate IS NULL OR e.expenseDate >= :startDate) " +
+           "AND (:endDate IS NULL OR e.expenseDate <= :endDate) " +
            "ORDER BY e.expenseDate ASC")
     List<Expense> findByUserAndDateBetween(
             @Param("userId") Long userId,
@@ -64,8 +64,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     @Query("SELECT c.name as name, c.color as color, SUM(e.amount) AS total, COUNT(e) AS count "
            + "FROM Expense e JOIN e.category c "
            + "WHERE e.user.id = :userId "
-           + "AND FUNCTION('MONTH', e.expenseDate) = :month "
-           + "AND FUNCTION('YEAR',  e.expenseDate) = :year "
+           + "AND EXTRACT(MONTH FROM e.expenseDate) = :month "
+           + "AND EXTRACT(YEAR FROM e.expenseDate) = :year "
            + "GROUP BY c.id, c.name, c.color "
            + "ORDER BY total DESC")
     List<CategoryBreakdownProjection> getCategoryBreakdown(
@@ -73,11 +73,11 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             @Param("month") Short month, 
             @Param("year") Short year);
 
-    @Query("SELECT FUNCTION('MONTH', e.expenseDate) AS month, SUM(e.amount) AS total "
+    @Query("SELECT EXTRACT(MONTH FROM e.expenseDate) AS month, SUM(e.amount) AS total "
            + "FROM Expense e "
            + "WHERE e.user.id = :userId "
-           + "AND FUNCTION('YEAR', e.expenseDate) = :year "
-           + "GROUP BY FUNCTION('MONTH', e.expenseDate) "
+           + "AND EXTRACT(YEAR FROM e.expenseDate) = :year "
+           + "GROUP BY EXTRACT(MONTH FROM e.expenseDate) "
            + "ORDER BY month ASC")
     List<MonthlyTrendProjection> getMonthlyTrend(
             @Param("userId") Long userId, 

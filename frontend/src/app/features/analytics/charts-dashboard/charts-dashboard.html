@@ -1,144 +1,160 @@
-
 <!-- Scrollable Canvas -->
 <div class="flex-1 overflow-y-auto p-container_padding space-y-gutter">
-<!-- ROW 1: YTD Summary -->
-<section *ngIf="yearlySummary$ | async as ytd" class="bg-surface-container-lowest rounded-xl border border-outline-variant card-shadow p-6">
-    <h3 class="font-title-sm text-title-sm text-on-surface-variant mb-4">Year-to-Date Summary</h3>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="p-4 bg-surface-low rounded-lg border border-outline-variant flex flex-col justify-center">
-            <span class="font-label-caps text-label-caps text-on-surface-variant mb-1">YTD TOTAL</span>
-            <span class="font-headline-md text-headline-md text-primary font-bold">{{ ytd.ytdTotal | currency:'LKR ':'symbol':'1.0-0' }}</span>
-        </div>
-        <div class="p-4 bg-surface-low rounded-lg border border-outline-variant flex flex-col justify-center">
-            <span class="font-label-caps text-label-caps text-on-surface-variant mb-1">HIGHEST MONTH: {{ ytd.largestMonth | uppercase }}</span>
-            <span class="font-title-sm text-title-sm text-on-background">{{ ytd.largestMonthTotal | currency:'LKR ':'symbol':'1.0-0' }}</span>
-        </div>
-        <div class="p-4 bg-error-container/20 rounded-lg border border-error-container flex flex-col justify-center">
-            <span class="font-label-caps text-label-caps text-error mb-1">MOST OVERSPENT</span>
-            <span class="font-title-sm text-title-sm text-error font-semibold">{{ ytd.mostOverspentCategory || 'None' }}</span>
-        </div>
-        <div class="p-4 bg-surface-low rounded-lg border border-outline-variant flex flex-col justify-center">
-            <span class="font-label-caps text-label-caps text-on-surface-variant mb-1">PROJECTED ANNUAL</span>
-            <span class="font-title-sm text-title-sm text-on-background">{{ ytd.projectedAnnualTotal | currency:'LKR ':'symbol':'1.0-0' }}</span>
-        </div>
-    </div>
-</section>
-<!-- ROW 2: Monthly Spending & Categories -->
-<section class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
-<!-- Left: Monthly Spending Bar Chart -->
-<div class="lg:col-span-7 bg-surface-container-lowest rounded-xl border border-outline-variant card-shadow p-6 flex flex-col">
-    <div class="flex justify-between items-center mb-6">
-        <h3 class="font-title-sm text-title-sm text-on-background">Monthly Spending — {{ currentYear }}</h3>
-    </div>
-    <div class="relative flex-1 min-h-[240px] w-full pt-4 pb-2">
-        <canvas baseChart 
-            [data]="barChartData" 
-            [options]="barChartOptions" 
-            [type]="barChartType">
-        </canvas>
-    </div>
-</div>
-<!-- Right: Category Doughnut -->
-<div class="lg:col-span-5 bg-surface-container-lowest rounded-xl border border-outline-variant card-shadow p-6 flex flex-col items-center">
-    <h3 class="font-title-sm text-title-sm text-on-background w-full text-left mb-6">Spending by Category — {{ currentMonth }}/{{ currentYear }}</h3>
-    
-    <div class="relative w-[220px] h-[220px] mb-6 flex justify-center items-center">
-        <div class="absolute inset-0 z-0">
-            <canvas baseChart 
-                [data]="doughnutChartData" 
-                [options]="doughnutChartOptions" 
-                [type]="doughnutChartType">
-            </canvas>
-        </div>
-        <div class="text-center z-10 pointer-events-none mt-2">
-            <span class="block font-headline-md text-headline-md font-bold text-primary">{{ totalSpentThisMonth | currency:'LKR ':'symbol':'1.0-0' }}</span>
-            <span class="font-label-caps text-label-caps text-on-surface-variant">TOTAL</span>
-        </div>
-    </div>
-    
-    <div class="grid grid-cols-2 gap-x-4 gap-y-2 w-full px-4 max-h-[120px] overflow-y-auto">
-        <div *ngFor="let cat of (categoryBreakdown$ | async)" class="flex items-center gap-2">
-            <div class="w-3 h-3 rounded-sm shrink-0" [style.backgroundColor]="cat.categoryColor"></div>
-            <span class="font-data-mono text-body-md text-on-background text-sm truncate" [title]="cat.categoryName + ' (' + (cat.percentage | number:'1.0-0') + '%)'">
-                {{ cat.categoryName }} ({{ cat.percentage | number:'1.0-0' }}%)
-            </span>
-        </div>
-    </div>
-</div>
-</section>
-<!-- ROW 3: Daily & Budget vs Actual -->
-<section class="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
-<!-- Left: Daily Spending Area Chart -->
-<div class="bg-surface-container-lowest rounded-xl border border-outline-variant card-shadow p-6">
-    <h3 class="font-title-sm text-title-sm text-on-background mb-4">Daily Spending — {{ currentMonth }}/{{ currentYear }}</h3>
-    <div class="h-[200px] w-full bg-surface-low rounded flex items-center justify-center border border-outline-variant relative overflow-hidden p-2">
-        <canvas baseChart 
-            [data]="lineChartData" 
-            [options]="lineChartOptions" 
-            [type]="lineChartType">
-        </canvas>
-    </div>
-</div>
-<!-- Right: Budget vs Actual -->
-<div class="bg-surface-container-lowest rounded-xl border border-outline-variant card-shadow p-6">
-    <h3 class="font-title-sm text-title-sm text-on-background mb-4">Budget vs Actual — {{ currentMonth }}/{{ currentYear }}</h3>
-    <div class="space-y-4 max-h-[200px] overflow-y-auto pr-2">
-        <div *ngFor="let budget of (budgetVsActual$ | async)">
-            <div class="flex justify-between text-sm mb-1">
-                <span class="font-body-md" [class.text-error]="budget.percentageUsed > 100" [class.font-semibold]="budget.percentageUsed > 100">{{ budget.categoryName }}</span>
-                <span class="font-data-mono" [class.text-error]="budget.percentageUsed > 100">
-                    {{ (budget.spentAmount / 1000) | number:'1.0-0' }}k / {{ (budget.budgetAmount / 1000) | number:'1.0-0' }}k
-                </span>
+    <!-- ROW 1: YTD Summary -->
+    <section *ngIf="yearlySummary$ | async as ytd"
+        class="bg-surface-container-lowest rounded-xl border border-outline-variant card-shadow p-6">
+        <h3 class="font-title-sm text-title-sm text-on-surface-variant mb-4">Year-to-Date Summary</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="p-4 bg-surface-low rounded-lg border border-outline-variant flex flex-col justify-center">
+                <span class="font-label-caps text-label-caps text-on-surface-variant mb-1">YTD TOTAL</span>
+                <span class="font-headline-md text-headline-md text-primary font-bold">{{ ytd.ytdTotal | currency:'LKR
+                    ':'symbol':'1.0-0' }}</span>
             </div>
-            <div class="h-2 w-full bg-surface-variant rounded-full overflow-hidden flex relative">
-                <div class="h-full bg-outline absolute opacity-30 rounded-full" style="width: 100%;"></div>
-                <div class="h-full z-10 rounded-full" 
-                     [style.width]="(budget.percentageUsed > 100 ? 100 : budget.percentageUsed) + '%'"
-                     [class.bg-[#00897B]]="budget.percentageUsed <= 85"
-                     [class.bg-[#FB8C00]]="budget.percentageUsed > 85 && budget.percentageUsed <= 100"
-                     [class.bg-error]="budget.percentageUsed > 100">
+            <div class="p-4 bg-surface-low rounded-lg border border-outline-variant flex flex-col justify-center">
+                <span class="font-label-caps text-label-caps text-on-surface-variant mb-1">HIGHEST MONTH: {{
+                    ytd.largestMonth | uppercase }}</span>
+                <span class="font-title-sm text-title-sm text-on-background">{{ ytd.largestMonthTotal | currency:'LKR
+                    ':'symbol':'1.0-0' }}</span>
+            </div>
+            <div
+                class="p-4 bg-error-container/20 rounded-lg border border-error-container flex flex-col justify-center">
+                <span class="font-label-caps text-label-caps text-error mb-1">MOST OVERSPENT</span>
+                <span class="font-title-sm text-title-sm text-error font-semibold">{{ ytd.mostOverspentCategory ||
+                    'None' }}</span>
+            </div>
+            <div class="p-4 bg-surface-low rounded-lg border border-outline-variant flex flex-col justify-center">
+                <span class="font-label-caps text-label-caps text-on-surface-variant mb-1">PROJECTED ANNUAL</span>
+                <span class="font-title-sm text-title-sm text-on-background">{{ ytd.projectedAnnualTotal | currency:'LKR
+                    ':'symbol':'1.0-0' }}</span>
+            </div>
+        </div>
+    </section>
+    <!-- ROW 2: Monthly Spending & Categories -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+        <!-- Left: Monthly Spending Bar Chart -->
+        <div
+            class="lg:col-span-7 bg-surface-container-lowest rounded-xl border border-outline-variant card-shadow p-6 flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-title-sm text-title-sm text-on-background">Monthly Spending - {{ currentYear }}</h3>
+            </div>
+            <div class="relative flex-1 min-h-[240px] w-full pt-4 pb-2">
+                <canvas baseChart [data]="barChartData" [options]="barChartOptions" [type]="barChartType">
+                </canvas>
+            </div>
+        </div>
+        <!-- Right: Category Doughnut -->
+        <div
+            class="lg:col-span-5 bg-surface-container-lowest rounded-xl border border-outline-variant card-shadow p-6 flex flex-col items-center">
+            <h3 class="font-title-sm text-title-sm text-on-background w-full text-left mb-6">Spending by Category - {{
+                currentMonth }}/{{ currentYear }}</h3>
+
+            <div class="relative w-[220px] h-[220px] mb-6 flex justify-center items-center">
+                <div class="absolute inset-0 z-0">
+                    <canvas baseChart [data]="doughnutChartData" [options]="doughnutChartOptions"
+                        [type]="doughnutChartType">
+                    </canvas>
+                </div>
+                <div class="text-center z-10 pointer-events-none mt-2">
+                    <span class="block font-headline-md text-headline-md font-bold text-primary">{{ totalSpentThisMonth
+                        | currency:'LKR ':'symbol':'1.0-0' }}</span>
+                    <span class="font-label-caps text-label-caps text-on-surface-variant">TOTAL</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-x-4 gap-y-2 w-full px-4 max-h-[120px] overflow-y-auto">
+                <div *ngFor="let cat of (categoryBreakdown$ | async)" class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-sm shrink-0" [style.backgroundColor]="cat.categoryColor"></div>
+                    <span class="font-data-mono text-body-md text-on-background text-sm truncate"
+                        [title]="cat.categoryName + ' (' + (cat.percentage | number:'1.0-0') + '%)'">
+                        {{ cat.categoryName }} ({{ cat.percentage | number:'1.0-0' }}%)
+                    </span>
                 </div>
             </div>
         </div>
-        <div *ngIf="!(budgetVsActual$ | async)?.length" class="text-on-surface-variant text-center py-4">No budgets set for this month.</div>
-    </div>
-</div>
-</section>
-<!-- ROW 4: Top Spending Categories Table -->
-<section class="bg-surface-container-lowest rounded-xl border border-outline-variant card-shadow overflow-hidden mb-8">
-<div class="px-6 py-4 border-b border-outline-variant">
-<h3 class="font-title-sm text-title-sm text-on-background">Top Spending Categories</h3>
-</div>
-<div class="overflow-x-auto">
-    <table class="w-full text-left border-collapse">
-        <thead>
-            <tr class="bg-surface text-on-surface-variant font-label-caps text-label-caps border-b border-outline-variant">
-                <th class="px-6 py-3 font-semibold">Rank</th>
-                <th class="px-6 py-3 font-semibold">Category</th>
-                <th class="px-6 py-3 font-semibold">Total Spent</th>
-                <th class="px-6 py-3 font-semibold">% of Total</th>
-            </tr>
-        </thead>
-        <tbody class="font-body-md text-body-md">
-            <tr *ngFor="let cat of (categoryBreakdown$ | async); let i = index" class="border-b border-surface-variant hover:bg-surface transition-colors">
-                <td class="px-6 py-4 text-center w-16">
-                    <span *ngIf="i === 0" class="material-symbols-outlined text-[#FFD700]">workspace_premium</span>
-                    <span *ngIf="i === 1" class="material-symbols-outlined text-[#C0C0C0]">workspace_premium</span>
-                    <span *ngIf="i === 2" class="material-symbols-outlined text-[#CD7F32]">workspace_premium</span>
-                    <span *ngIf="i > 2" class="text-on-surface-variant font-data-mono">{{ i + 1 }}</span>
-                </td>
-                <td class="px-6 py-4 font-semibold flex items-center gap-2">
-                    <div class="w-3 h-3 rounded-sm" [style.backgroundColor]="cat.categoryColor"></div>
-                    {{ cat.categoryName }}
-                </td>
-                <td class="px-6 py-4 font-data-mono">{{ cat.total | currency:'LKR ':'symbol':'1.0-0' }}</td>
-                <td class="px-6 py-4 font-data-mono">{{ cat.percentage | number:'1.0-0' }}%</td>
-            </tr>
-            <tr *ngIf="!(categoryBreakdown$ | async)?.length">
-                <td colspan="4" class="px-6 py-8 text-center text-on-surface-variant">No spending data for this month.</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-</section>
+    </section>
+    <!-- ROW 3: Daily & Budget vs Actual -->
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
+        <!-- Left: Daily Spending Area Chart -->
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant card-shadow p-6">
+            <h3 class="font-title-sm text-title-sm text-on-background mb-4">Daily Spending - {{ currentMonth }}/{{
+                currentYear }}</h3>
+            <div
+                class="h-[200px] w-full bg-surface-low rounded flex items-center justify-center border border-outline-variant relative overflow-hidden p-2">
+                <canvas baseChart [data]="lineChartData" [options]="lineChartOptions" [type]="lineChartType">
+                </canvas>
+            </div>
+        </div>
+        <!-- Right: Budget vs Actual -->
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant card-shadow p-6">
+            <h3 class="font-title-sm text-title-sm text-on-background mb-4">Budget vs Actual - {{ currentMonth }}/{{
+                currentYear }}</h3>
+            <div class="space-y-4 max-h-[200px] overflow-y-auto pr-2">
+                <div *ngFor="let budget of (budgetVsActual$ | async)">
+                    <div class="flex justify-between text-sm mb-1">
+                        <span class="font-body-md" [class.text-error]="budget.percentageUsed > 100"
+                            [class.font-semibold]="budget.percentageUsed > 100">{{ budget.categoryName }}</span>
+                        <span class="font-data-mono" [class.text-error]="budget.percentageUsed > 100">
+                            {{ (budget.spentAmount / 1000) | number:'1.0-0' }}k / {{ (budget.budgetAmount / 1000) |
+                            number:'1.0-0' }}k
+                        </span>
+                    </div>
+                    <div class="h-2 w-full bg-surface-variant rounded-full overflow-hidden flex relative">
+                        <div class="h-full bg-outline absolute opacity-30 rounded-full" style="width: 100%;"></div>
+                        <div class="h-full z-10 rounded-full"
+                            [style.width]="(budget.percentageUsed > 100 ? 100 : budget.percentageUsed) + '%'"
+                            [class.bg-[#00897B]]="budget.percentageUsed <= 85"
+                            [class.bg-[#FB8C00]]="budget.percentageUsed > 85 && budget.percentageUsed <= 100"
+                            [class.bg-error]="budget.percentageUsed > 100">
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="!(budgetVsActual$ | async)?.length" class="text-on-surface-variant text-center py-4">No
+                    budgets set for this month.</div>
+            </div>
+        </div>
+    </section>
+    <!-- ROW 4: Top Spending Categories Table -->
+    <section
+        class="bg-surface-container-lowest rounded-xl border border-outline-variant card-shadow overflow-hidden mb-8">
+        <div class="px-6 py-4 border-b border-outline-variant">
+            <h3 class="font-title-sm text-title-sm text-on-background">Top Spending Categories</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr
+                        class="bg-surface text-on-surface-variant font-label-caps text-label-caps border-b border-outline-variant">
+                        <th class="px-6 py-3 font-semibold">Rank</th>
+                        <th class="px-6 py-3 font-semibold">Category</th>
+                        <th class="px-6 py-3 font-semibold">Total Spent</th>
+                        <th class="px-6 py-3 font-semibold">% of Total</th>
+                    </tr>
+                </thead>
+                <tbody class="font-body-md text-body-md">
+                    <tr *ngFor="let cat of (categoryBreakdown$ | async); let i = index"
+                        class="border-b border-surface-variant hover:bg-surface transition-colors">
+                        <td class="px-6 py-4 text-center w-16">
+                            <span *ngIf="i === 0"
+                                class="material-symbols-outlined text-[#FFD700]">workspace_premium</span>
+                            <span *ngIf="i === 1"
+                                class="material-symbols-outlined text-[#C0C0C0]">workspace_premium</span>
+                            <span *ngIf="i === 2"
+                                class="material-symbols-outlined text-[#CD7F32]">workspace_premium</span>
+                            <span *ngIf="i > 2" class="text-on-surface-variant font-data-mono">{{ i + 1 }}</span>
+                        </td>
+                        <td class="px-6 py-4 font-semibold flex items-center gap-2">
+                            <div class="w-3 h-3 rounded-sm" [style.backgroundColor]="cat.categoryColor"></div>
+                            {{ cat.categoryName }}
+                        </td>
+                        <td class="px-6 py-4 font-data-mono">{{ cat.total | currency:'LKR ':'symbol':'1.0-0' }}</td>
+                        <td class="px-6 py-4 font-data-mono">{{ cat.percentage | number:'1.0-0' }}%</td>
+                    </tr>
+                    <tr *ngIf="!(categoryBreakdown$ | async)?.length">
+                        <td colspan="4" class="px-6 py-8 text-center text-on-surface-variant">No spending data for this
+                            month.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
 </div>

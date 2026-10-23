@@ -27,10 +27,10 @@ export class CategoryList implements OnInit {
   loadCategories(): void {
     const allCategories$ = this.categoryService.getCategories();
     this.systemCategories$ = allCategories$.pipe(
-      map(categories => categories.filter(c => c.isDefault))
+      map(categories => categories.filter(c => !!(c.isDefault || c.default)))
     );
     this.customCategories$ = allCategories$.pipe(
-      map(categories => categories.filter(c => !c.isDefault))
+      map(categories => categories.filter(c => !(c.isDefault || c.default)))
     );
   }
 

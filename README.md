@@ -50,21 +50,26 @@ flowchart LR
 
 ## Key Features
 
-- **JWT Authentication** — Register, login, profile update, password change
-- **Expense CRUD** — Create, read, update, delete with filters and server-side pagination
-- **CSV/PDF Export** — Export expenses with date range filtering
-- **Category Management** — 9 pre-seeded defaults + custom categories with icon/colour
-- **Budget Management** — Monthly budgets per category with upsert logic
-- **Analytics Dashboard** — Category breakdown (pie), monthly trend (bar), daily trend (line), yearly summary
-- **Profile Settings** — Update display name, change password
-- **Responsive App Shell** — Navbar + sidebar layout with route guards
+- **JWT Authentication** - Register, login, profile update, password change
+- **Expense CRUD** - Create, read, update, delete with category filter, keyword search, and server-side pagination
+- **CSV/PDF Export** - Export expenses with date range filtering
+- **Category Management** - 9 pre-seeded defaults + custom categories with icon/colour
+- **Budget Management** - Monthly budgets per category with upsert logic
+- **Analytics Dashboard** - Category breakdown (pie), monthly trend (bar), daily trend (line), yearly summary powered by Chart.js & ng2-charts
+- **Profile Settings** - Update display name, change password
+- **Responsive App Shell** - Dynamic route titles, current month indicator, and sidebar layout with route guards
 
 ## Setup and Run Locally
 
-### 1. Database (Supabase / PostgreSQL)
+### 1. Database & Environment Setup
 1. Set up a free-tier project on [Supabase](https://supabase.com).
-2. Collect the PostgreSQL connection string (host, port, dbname, user, password).
-3. Update `backend/src/main/resources/application.yml` with your connection details.
+2. Collect the PostgreSQL connection string. Use the **Session Pooler (Port 5432)**:
+   `jdbc:postgresql://aws-0-<region>.pooler.supabase.com:5432/postgres?sslmode=require`
+3. Copy `.env.example` to `.env` in the root (or in `backend/` and `frontend/`):
+   ```bash
+   cp .env.example .env
+   ```
+4. Set your database credentials in `.env` (or pass them as environment variables).
 
 ### 2. Backend (Spring Boot)
 1. Ensure you have Java 17+ installed.
@@ -100,6 +105,7 @@ Base URL: `http://localhost:8080/api/v1`
 
 | Method | Endpoint | Description | Auth |
 |---|---|---|---|
+| `GET` | `/health` | Service health & wake-up ping | ❌ |
 | `POST` | `/auth/register` | Register a new user | ❌ |
 | `POST` | `/auth/login` | Login with credentials | ❌ |
 | `PUT` | `/auth/me` | Update user profile (name) | ✅ |
@@ -123,21 +129,46 @@ Base URL: `http://localhost:8080/api/v1`
 | `GET` | `/analytics/monthly-trend?year=` | Monthly spending trend | ✅ |
 | `GET` | `/analytics/yearly-summary` | Year-to-date summary | ✅ |
 
+## 🚀 Cloud Deployment
+
+### Frontend (Vercel)
+- **Root Directory:** `frontend`
+- **Framework Preset:** `Angular`
+- **Output Directory:** `dist/frontend` (configured with `outputPath.browser: ""` in `angular.json`)
+- **SPA Rewrites:** Configured in `frontend/vercel.json` (`/(.*) -> /index.html`)
+
+### Backend (Render)
+- **Environment:** Docker (`Dockerfile` building Java 17 executable jar)
+- **Branch:** Ensure Render is pointing to your active deployment branch (e.g., `development` or `main`)
+- **Environment Variables:**
+  - `SPRING_DATASOURCE_URL`: `jdbc:postgresql://<pooler-host>:5432/postgres?sslmode=require`
+  - `SPRING_DATASOURCE_USERNAME`: `postgres.<project-ref>`
+  - `SPRING_DATASOURCE_PASSWORD`: `<supabase-db-password>`
+  - `APP_JWT_SECRET`: 256-bit secret key
+  - `APP_CORS_ALLOWED_ORIGINS`: Comma-separated frontend origins (e.g., `https://expense-tracker-pi-indol-14.vercel.app`)
+
+### Auto Wake-up Ping
+When visitors load the Angular frontend, `App.ngOnInit()` automatically issues a background `fetch()` to `/health` to wake up the Render free-tier container before the user submits their login or registration form.
+
 ## Project Structure
 
 ```text
 Expense Tracker/
+├── .env.example                       # Root environment variables template
 ├── backend/                           # Spring Boot REST API
+│   ├── .env.example                   # Backend environment template
+│   ├── Dockerfile                     # Container definition for Render
 │   ├── src/main/java/...              # Source code (Controllers, Services, Models, Repositories)
 │   ├── src/main/resources/            # Application config (application.yml) & Flyway migrations
 │   └── src/test/...                   # Unit & Integration tests
 ├── frontend/                          # Angular SPA
+│   ├── .env.example                   # Frontend environment template
+│   ├── vercel.json                    # Vercel SPA routing configuration
 │   ├── src/app/                       # Angular application code
 │   │   ├── core/                      # Singleton services & guards
 │   │   ├── features/                  # Lazy-loaded feature modules (Auth, Dashboard, Expenses, etc.)
 │   │   └── shared/                    # Reusable components
-│   └── tailwind.config.js             # Tailwind styling configuration
-├── render.yaml                        # Render deployment configuration
+│   └── src/environments/              # Environment configs (dev & prod)
 └── .gitignore
 ```
 
