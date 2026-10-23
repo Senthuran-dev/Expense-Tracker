@@ -23,6 +23,7 @@ export class Login {
 
   isLoading = false;
   error: string | null = null;
+  showPassword = false;
 
   onSubmit() {
     if (this.loginForm.valid) {

@@ -26,6 +26,8 @@ export class Register {
 
   isLoading = false;
   error: string | null = null;
+  showPassword = false;
+  showConfirmPassword = false;
 
   passwordMatchValidator(g: FormGroup) {
     return g.get('password')?.value === g.get('confirmPassword')?.value
