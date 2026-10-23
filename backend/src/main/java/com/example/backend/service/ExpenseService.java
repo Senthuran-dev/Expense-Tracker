@@ -20,11 +20,13 @@ import com.lowagie.text.pdf.PdfWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -37,8 +39,26 @@ public class ExpenseService {
 
     public Page<ExpenseResponse> getExpenses(String email, Long categoryId, LocalDate startDate, LocalDate endDate, String search, Pageable pageable) {
         User user = getUser(email);
-        return expenseRepository.findByUserAndFilters(user.getId(), categoryId, startDate, endDate, search, pageable)
-                .map(this::mapToResponse);
+        Specification<Expense> spec = (root, query, cb) -> {
+            List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("user").get("id"), user.getId()));
+
+            if (categoryId != null) {
+                predicates.add(cb.equal(root.get("category").get("id"), categoryId));
+            }
+            if (startDate != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("expenseDate"), startDate));
+            }
+            if (endDate != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("expenseDate"), endDate));
+            }
+            if (search != null && !search.trim().isEmpty()) {
+                predicates.add(cb.like(cb.lower(root.get("description")), "%" + search.trim().toLowerCase() + "%"));
+            }
+            return cb.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
+        };
+
+        return expenseRepository.findAll(spec, pageable).map(this::mapToResponse);
     }
 
     public ExpenseResponse getExpenseById(String email, Long id) {
@@ -90,7 +110,7 @@ public class ExpenseService {
 
     public byte[] exportToCsv(String email, LocalDate startDate, LocalDate endDate) {
         User user = getUser(email);
-        List<Expense> expenses = expenseRepository.findByUserAndDateBetween(user.getId(), startDate, endDate);
+        List<Expense> expenses = getFilteredExpensesList(user.getId(), startDate, endDate);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         PrintWriter writer = new PrintWriter(out);
@@ -108,7 +128,7 @@ public class ExpenseService {
 
     public byte[] exportToPdf(String email, LocalDate startDate, LocalDate endDate) throws DocumentException {
         User user = getUser(email);
-        List<Expense> expenses = expenseRepository.findByUserAndDateBetween(user.getId(), startDate, endDate);
+        List<Expense> expenses = getFilteredExpensesList(user.getId(), startDate, endDate);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Document document = new Document();
@@ -148,6 +168,22 @@ public class ExpenseService {
             header.setPhrase(new Phrase(headerTitle));
             table.addCell(header);
         }
+    }
+
+    private List<Expense> getFilteredExpensesList(Long userId, LocalDate startDate, LocalDate endDate) {
+        Specification<Expense> spec = (root, query, cb) -> {
+            List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("user").get("id"), userId));
+            if (startDate != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("expenseDate"), startDate));
+            }
+            if (endDate != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("expenseDate"), endDate));
+            }
+            query.orderBy(cb.asc(root.get("expenseDate")));
+            return cb.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
+        };
+        return expenseRepository.findAll(spec);
     }
 
     private Expense getExpenseIfOwned(String email, Long id) {

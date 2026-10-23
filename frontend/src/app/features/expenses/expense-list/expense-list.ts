@@ -4,8 +4,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ExpenseService, Expense, Page } from '../../../core/services/expense.service';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { CategoryService, Category } from '../../../core/services/category.service';
-import { Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, tap, catchError } from 'rxjs/operators';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ExpenseFormDialog } from '../expense-form-dialog/expense-form-dialog';
 import { ExportDialog } from '../export-dialog/export-dialog';
@@ -66,6 +66,10 @@ export class ExpenseList implements OnInit {
             this.selectedIds.delete(id);
           }
         });
+      }),
+      catchError(err => {
+        console.error('Failed to load expenses:', err);
+        return of({ content: [], totalElements: 0, totalPages: 0, size: this.size, number: this.page });
       })
     );
   }
