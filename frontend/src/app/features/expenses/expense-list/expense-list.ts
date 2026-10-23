@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ExpenseService, Expense, Page } from '../../../core/services/expense.service';
 import { AnalyticsService } from '../../../core/services/analytics.service';
+import { CategoryService, Category } from '../../../core/services/category.service';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -19,9 +20,14 @@ import { ExportDialog } from '../export-dialog/export-dialog';
 export class ExpenseList implements OnInit {
   private expenseService = inject(ExpenseService);
   private analyticsService = inject(AnalyticsService);
+  private categoryService = inject(CategoryService);
   private dialog = inject(MatDialog);
   
   expensesPage$: Observable<Page<Expense>> | null = null;
+  categories$: Observable<Category[]> = this.categoryService.getCategories();
+  selectedCategoryId: number | null = null;
+  currentMonthYear = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date());
+
   page = 0;
   size = 10;
 
@@ -45,6 +51,9 @@ export class ExpenseList implements OnInit {
     const filters: any = { page: this.page, size: this.size };
     if (this.searchTerm) {
       filters['search'] = this.searchTerm;
+    }
+    if (this.selectedCategoryId) {
+      filters['categoryId'] = this.selectedCategoryId;
     }
     
     this.expensesPage$ = this.expenseService.getExpenses(filters).pipe(
@@ -72,6 +81,12 @@ export class ExpenseList implements OnInit {
   }
 
   onSearch(): void {
+    this.page = 0;
+    this.loadExpenses();
+  }
+
+  onCategoryChange(categoryId: number | null): void {
+    this.selectedCategoryId = categoryId;
     this.page = 0;
     this.loadExpenses();
   }

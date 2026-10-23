@@ -1,4 +1,4 @@
-# Expense Tracker — Frontend
+# Expense Tracker - Frontend
 
 Angular SPA for the Expense Tracker application, built with Angular 21.2 (standalone components), Tailwind CSS, Angular Material, and Chart.js.
 
@@ -29,11 +29,12 @@ src/
 ├── index.html                     # HTML shell
 ├── styles.scss                    # Global styles
 ├── environments/
-│   └── environment.ts             # API base URL config
+│   ├── environment.ts             # Local API base URL config
+│   └── environment.prod.ts        # Production Render API URL
 └── app/
     ├── app.ts                     # Root component
     ├── app.routes.ts              # Route definitions
-    ├── app.config.ts              # Providers (HTTP, routing)
+    ├── app.config.ts              # Providers (HTTP, routing, provideCharts)
     ├── core/                      # Singleton services & guards
     │   ├── services/
     │   │   ├── auth.service.ts        # JWT auth, profile, password
@@ -102,22 +103,48 @@ All authenticated routes are wrapped in the `AppShell` layout component (navbar 
 
 ## Environment Configuration
 
-The API base URL is configured in `src/environments/environment.ts`:
+The API base URL is configured per environment:
 
-```typescript
-export const environment = {
-  production: false,
-  apiUrl: 'http://localhost:8080/api/v1'
-};
-```
+- **Development (`src/environments/environment.ts`):**
+  ```typescript
+  export const environment = {
+    production: false,
+    apiUrl: 'http://localhost:8080/api/v1'
+  };
+  ```
+- **Production (`src/environments/environment.prod.ts`):**
+  ```typescript
+  export const environment = {
+    production: true,
+    apiUrl: 'https://expense-tracker-api-ifp8.onrender.com/api/v1'
+  };
+  ```
 
-## Building for Production
+Additionally, `.env.example` is provided as a reference template for local configuration.
+
+### Render Backend Wake-up Ping
+
+On application startup (`App.ngOnInit`), the frontend automatically fires a non-blocking background `fetch()` to `/health` on the Render backend to wake up the free-tier service while the user navigates the auth/landing screens.
+
+## Building for Production & Deployment
 
 ```bash
-ng build
+npm run build
 ```
 
-The production build is output to the `dist/` directory, optimised for performance. Deployed to Netlify with SPA redirect rules configured in `netlify.toml`.
+The production build is output directly to `dist/frontend/` (configured in `angular.json` via `outputPath.browser: ""`), optimised for performance. 
+
+The frontend is deployed on **Vercel** with client-side SPA routing rewrites configured in `vercel.json`:
+```json
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
+```
 
 ## Code Scaffolding
 

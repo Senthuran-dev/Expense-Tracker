@@ -1,71 +1,86 @@
 <!-- Page Header -->
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
-<div>
-<h2 class="font-display-lg text-display-lg text-primary-container">Categories</h2>
-<p class="font-body-md text-body-md text-on-surface-variant mt-1">Manage your spending categories. System categories cannot be edited.</p>
-</div>
-<button (click)="openDialog()" class="bg-secondary text-on-secondary px-4 py-2 rounded-xl font-title-sm text-title-sm flex items-center justify-center hover:bg-secondary-fixed-dim transition-colors whitespace-nowrap self-start sm:self-auto shadow-sm">
-<span class="material-symbols-outlined mr-2 text-[20px]">add</span>
-                    Create Category
-                </button>
+    <div>
+        <h2 class="font-display-lg text-display-lg text-primary-container">Categories</h2>
+        <p class="font-body-md text-body-md text-on-surface-variant mt-1">Manage your spending categories. System
+            categories cannot be edited.</p>
+    </div>
+    <button (click)="openDialog()"
+        class="bg-secondary text-on-secondary px-4 py-2 rounded-xl font-title-sm text-title-sm flex items-center justify-center hover:bg-secondary-fixed-dim transition-colors whitespace-nowrap self-start sm:self-auto shadow-sm">
+        <span class="material-symbols-outlined mr-2 text-[20px]">add</span>
+        Create Category
+    </button>
 </div>
 <!-- SECTION 1: System Categories (Bento Grid Style) -->
-<section class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-[0_2px_4px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col">
-<!-- Card Header -->
-<div class="px-container_padding py-4 border-b border-surface-variant flex items-center justify-between bg-surface-container-low">
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-outline text-[20px]">lock</span>
-<h3 class="font-title-sm text-title-sm text-on-surface">System Categories</h3>
-<span class="font-body-md text-[12px] text-outline ml-2">(9 default categories — read only)</span>
-</div>
-</div>
-<!-- Card Body - Bento Grid -->
-<div class="p-container_padding bg-surface-container-low/30">
-<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-    <div *ngFor="let cat of (systemCategories$ | async)" class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col items-center justify-center gap-3 relative opacity-80 hover:opacity-100 transition-opacity">
-        <span class="material-symbols-outlined absolute top-2 right-2 text-outline text-[16px]">lock</span>
-        <div class="w-12 h-12 rounded-full flex items-center justify-center"
-             [style.backgroundColor]="cat.color + '20'" [style.color]="cat.color">
-            <span class="material-symbols-outlined text-[28px]">{{ cat.icon }}</span>
+<section
+    class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-[0_2px_4px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col">
+    <!-- Card Header -->
+    <div
+        class="px-container_padding py-4 border-b border-surface-variant flex items-center justify-between bg-surface-container-low">
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-outline text-[20px]">lock</span>
+            <h3 class="font-title-sm text-title-sm text-on-surface">System Categories</h3>
+            <span class="font-body-md text-[12px] text-outline ml-2">(9 default categories - read only)</span>
         </div>
-        <span class="font-title-sm text-[13px] text-on-surface text-center leading-tight">{{ cat.name }}</span>
-        <span class="bg-surface-variant text-on-surface-variant font-label-caps text-label-caps px-2 py-0.5 rounded-sm">DEFAULT</span>
     </div>
-</div>
-</div>
+    <!-- Card Body - Bento Grid -->
+    <div class="p-container_padding bg-surface-container-low/30">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <div *ngFor="let cat of (systemCategories$ | async)"
+                class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col items-center justify-center gap-3 relative opacity-80 hover:opacity-100 transition-opacity">
+                <span class="material-symbols-outlined absolute top-2 right-2 text-outline text-[16px]">lock</span>
+                <div class="w-12 h-12 rounded-full flex items-center justify-center"
+                    [style.backgroundColor]="cat.color + '20'" [style.color]="cat.color">
+                    <span class="material-symbols-outlined text-[28px]">{{ cat.icon }}</span>
+                </div>
+                <span class="font-title-sm text-[13px] text-on-surface text-center leading-tight">{{ cat.name }}</span>
+                <span
+                    class="bg-surface-variant text-on-surface-variant font-label-caps text-label-caps px-2 py-0.5 rounded-sm">DEFAULT</span>
+            </div>
+        </div>
+    </div>
 </section>
 <!-- SECTION 2: My Custom Categories -->
-<section class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-[0_2px_4px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col mt-4">
-<!-- Card Header -->
-<div class="px-container_padding py-4 border-b border-surface-variant flex items-center justify-between bg-surface-container-low">
-<h3 class="font-title-sm text-title-sm text-on-surface">My Custom Categories <span class="font-body-md text-outline font-normal">({{ (customCategories$ | async)?.length || 0 }} categories)</span></h3>
-<button (click)="openDialog()" class="text-secondary font-title-sm text-[14px] hover:underline flex items-center gap-1">
-<span class="material-symbols-outlined text-[18px]">add</span>
-                        Create Category
-                    </button>
-</div>
-<!-- List Body -->
-<div class="flex flex-col">
-    <div *ngFor="let cat of (customCategories$ | async)" class="flex items-center px-container_padding py-4 border-b border-surface-variant hover:bg-surface-container-low/50 transition-colors h-[56px] group">
-        <div class="w-8 h-8 rounded-full flex items-center justify-center mr-4 shrink-0"
-             [style.backgroundColor]="cat.color + '20'" [style.color]="cat.color">
-            <span class="material-symbols-outlined text-[18px]">{{ cat.icon }}</span>
+<section
+    class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-[0_2px_4px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col mt-4">
+    <!-- Card Header -->
+    <div
+        class="px-container_padding py-4 border-b border-surface-variant flex items-center justify-between bg-surface-container-low">
+        <h3 class="font-title-sm text-title-sm text-on-surface">My Custom Categories <span
+                class="font-body-md text-outline font-normal">({{ (customCategories$ | async)?.length || 0 }}
+                categories)</span></h3>
+        <button (click)="openDialog()"
+            class="text-secondary font-title-sm text-[14px] hover:underline flex items-center gap-1">
+            <span class="material-symbols-outlined text-[18px]">add</span>
+            Create Category
+        </button>
+    </div>
+    <!-- List Body -->
+    <div class="flex flex-col">
+        <div *ngFor="let cat of (customCategories$ | async)"
+            class="flex items-center px-container_padding py-4 border-b border-surface-variant hover:bg-surface-container-low/50 transition-colors h-[56px] group">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center mr-4 shrink-0"
+                [style.backgroundColor]="cat.color + '20'" [style.color]="cat.color">
+                <span class="material-symbols-outlined text-[18px]">{{ cat.icon }}</span>
+            </div>
+            <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 flex-1 min-w-0">
+                <span class="font-title-sm text-title-sm text-on-surface truncate">{{ cat.name }}</span>
+                <span
+                    class="bg-primary-container/10 text-primary-container font-label-caps text-label-caps px-2 py-0.5 rounded-sm hidden sm:inline-block w-max">CUSTOM</span>
+            </div>
+            <div class="flex items-center gap-2 ml-auto shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button (click)="openDialog(cat.id)" aria-label="Edit category"
+                    class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-variant rounded-full transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">edit</span>
+                </button>
+                <button (click)="deleteCategory(cat.id)" aria-label="Delete category"
+                    class="p-2 text-on-surface-variant hover:text-error hover:bg-error/10 rounded-full transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                </button>
+            </div>
         </div>
-        <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 flex-1 min-w-0">
-            <span class="font-title-sm text-title-sm text-on-surface truncate">{{ cat.name }}</span>
-            <span class="bg-primary-container/10 text-primary-container font-label-caps text-label-caps px-2 py-0.5 rounded-sm hidden sm:inline-block w-max">CUSTOM</span>
-        </div>
-        <div class="flex items-center gap-2 ml-auto shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button (click)="openDialog(cat.id)" aria-label="Edit category" class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-variant rounded-full transition-colors">
-                <span class="material-symbols-outlined text-[20px]">edit</span>
-            </button>
-            <button (click)="deleteCategory(cat.id)" aria-label="Delete category" class="p-2 text-on-surface-variant hover:text-error hover:bg-error/10 rounded-full transition-colors">
-                <span class="material-symbols-outlined text-[20px]">delete</span>
-            </button>
+        <div *ngIf="!(customCategories$ | async)?.length" class="p-8 text-center text-on-surface-variant">
+            You have not created any custom categories yet.
         </div>
     </div>
-    <div *ngIf="!(customCategories$ | async)?.length" class="p-8 text-center text-on-surface-variant">
-        You have not created any custom categories yet.
-    </div>
-</div>
 </section>
