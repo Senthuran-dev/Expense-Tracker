@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { timeout } from 'rxjs/operators';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
@@ -41,13 +42,21 @@ export class Register {
       
       const { name, email, password } = this.registerForm.value;
       
-      this.authService.register({ name, email, password }).subscribe({
+      this.authService.register({ name, email, password }).pipe(
+        timeout(25000)
+      ).subscribe({
         next: () => {
           this.router.navigate(['/dashboard']);
         },
         error: (err) => {
           this.isLoading = false;
-          this.error = err.error?.message || 'Failed to register. Please try again.';
+          if (err.name === 'TimeoutError') {
+            this.error = 'Server took too long to respond. It may still be waking up on Render. Please try again in a moment.';
+          } else if (err.status === 0) {
+            this.error = 'Unable to connect to backend API. Please check your network or CORS.';
+          } else {
+            this.error = err.error?.message || 'Failed to register. Please try again.';
+          }
         }
       });
     }

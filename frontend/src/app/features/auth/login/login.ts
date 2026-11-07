@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { timeout } from 'rxjs/operators';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
@@ -32,13 +33,21 @@ export class Login {
       
       const { email, password } = this.loginForm.value;
       
-      this.authService.login({ email, password }).subscribe({
+      this.authService.login({ email, password }).pipe(
+        timeout(25000)
+      ).subscribe({
         next: () => {
           this.router.navigate(['/dashboard']);
         },
         error: (err) => {
           this.isLoading = false;
-          this.error = err.error?.message || 'Failed to login. Please try again.';
+          if (err.name === 'TimeoutError') {
+            this.error = 'Server took too long to respond. It may still be waking up on Render. Please try again in a moment.';
+          } else if (err.status === 0) {
+            this.error = 'Unable to connect to backend API. Please check your network or CORS.';
+          } else {
+            this.error = err.error?.message || 'Invalid email or password.';
+          }
         }
       });
     }
