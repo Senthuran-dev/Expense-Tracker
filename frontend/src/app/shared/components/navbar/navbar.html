@@ -16,12 +16,60 @@
 <span class="absolute top-1 right-1 w-4 h-4 bg-error text-on-error rounded-full font-label-caps text-[10px] flex items-center justify-center border-2 border-surface">3</span>
 </button>
 </div>
-<!-- Date Chip -->
-<button class="hidden md:flex items-center gap-1 border border-secondary text-secondary font-title-sm text-title-sm px-3 py-1.5 rounded-full hover:bg-secondary/10 transition-colors">
-<span class="material-symbols-outlined text-[18px]" data-icon="calendar_month">calendar_month</span>
-                    {{ currentMonthYear }}
-                    <span class="material-symbols-outlined text-[18px]" data-icon="arrow_drop_down">arrow_drop_down</span>
-</button>
+<!-- Date Selector with Navigation -->
+<div class="relative hidden md:flex items-center gap-1">
+  <button type="button" (click)="prevMonth()" class="p-1 rounded-full text-secondary hover:bg-secondary/10 transition-colors" title="Previous month">
+    <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+  </button>
+  <button type="button" (click)="toggleDropdown()" class="flex items-center gap-1.5 border border-secondary text-secondary font-title-sm text-title-sm px-3 py-1.5 rounded-full hover:bg-secondary/10 transition-colors cursor-pointer select-none">
+    <span class="material-symbols-outlined text-[18px]" data-icon="calendar_month">calendar_month</span>
+    <span>{{ (dateFilterService.selectedDate$ | async) ? dateFilterService.formattedMonthYear : 'Select Date' }}</span>
+    <span class="material-symbols-outlined text-[18px] transition-transform duration-200" [class.rotate-180]="isDropdownOpen">arrow_drop_down</span>
+  </button>
+  <button type="button" (click)="nextMonth()" class="p-1 rounded-full text-secondary hover:bg-secondary/10 transition-colors" title="Next month">
+    <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+  </button>
+
+  <!-- Month Picker Dropdown -->
+  <div *ngIf="isDropdownOpen" class="absolute right-0 top-full mt-2 w-72 bg-surface-container-lowest rounded-xl shadow-xl border border-outline-variant p-4 z-50">
+    <!-- Year Stepper -->
+    <div class="flex items-center justify-between mb-3 pb-2 border-b border-surface-variant">
+      <button type="button" (click)="prevYear()" class="p-1 rounded hover:bg-surface-variant text-on-surface">
+        <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+      </button>
+      <span class="font-title-sm font-bold text-on-surface text-base">{{ tempYear }}</span>
+      <button type="button" (click)="nextYear()" class="p-1 rounded hover:bg-surface-variant text-on-surface">
+        <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+      </button>
+    </div>
+
+    <!-- 12-Month Grid -->
+    <div class="grid grid-cols-3 gap-2">
+      <button *ngFor="let m of months; let i = index" 
+              type="button"
+              (click)="selectMonth(i)"
+              class="py-2 px-1 text-xs font-medium rounded-lg transition-colors text-center"
+              [ngClass]="(dateFilterService.currentMonth === i + 1 && dateFilterService.currentYear === tempYear) 
+                ? 'bg-secondary text-on-secondary font-bold shadow-sm' 
+                : 'hover:bg-surface-variant text-on-surface'">
+        {{ m.slice(0, 3) }}
+      </button>
+    </div>
+
+    <!-- Footer Quick Actions -->
+    <div class="mt-3 pt-2 border-t border-surface-variant flex justify-between items-center text-xs">
+      <button type="button" (click)="selectCurrentMonth()" class="text-secondary hover:underline font-semibold">
+        Current Month
+      </button>
+      <button type="button" (click)="closeDropdown()" class="text-on-surface-variant hover:text-on-surface">
+        Close
+      </button>
+    </div>
+  </div>
+
+  <!-- Click outside overlay to close -->
+  <div *ngIf="isDropdownOpen" (click)="closeDropdown()" class="fixed inset-0 z-40 bg-transparent"></div>
+</div>
 <!-- Avatar Right -->
 <div class="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-on-secondary font-title-sm text-title-sm cursor-pointer hover:ring-2 ring-secondary ring-offset-2 ring-offset-surface transition-all" *ngIf="authService.currentUser$ | async as user">
                     {{ user.name.charAt(0).toUpperCase() }}

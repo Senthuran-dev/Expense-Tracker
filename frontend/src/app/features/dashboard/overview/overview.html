@@ -7,6 +7,25 @@
   categoryBreakdown: categoryBreakdown$ | async
 } as data">
 
+<!-- Dashboard Period Header -->
+<div class="flex items-center justify-between mb-4 pb-2 border-b border-surface-variant">
+  <div class="flex items-center gap-2">
+    <span class="font-title-sm text-title-sm font-bold text-on-surface">Overview</span>
+    <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-secondary/10 text-secondary">
+      {{ currentMonthName }} {{ currentYear }}
+    </span>
+  </div>
+  <!-- Quick Month Navigation -->
+  <div class="flex items-center gap-1">
+    <button type="button" (click)="dateFilterService.prevMonth()" class="p-1.5 rounded-lg border border-outline-variant hover:bg-surface-variant text-on-surface transition-colors flex items-center" title="Previous month">
+      <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+    </button>
+    <button type="button" (click)="dateFilterService.nextMonth()" class="p-1.5 rounded-lg border border-outline-variant hover:bg-surface-variant text-on-surface transition-colors flex items-center" title="Next month">
+      <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+    </button>
+  </div>
+</div>
+
 <!-- Row 1: Summary Cards -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
     <!-- Card 1: Total Spent -->
@@ -16,7 +35,7 @@
             <div class="flex items-baseline gap-1">
                 <span class="font-data-mono text-2xl font-bold text-primary">{{ (data.totalSpent || 0) | currency:'LKR ':'symbol':'1.0-0' }}</span>
             </div>
-            <p class="font-body-md text-xs text-on-surface-variant mt-1">This Month</p>
+            <p class="font-body-md text-xs text-on-surface-variant mt-1">{{ currentMonthName }} {{ currentYear }}</p>
         </div>
         <div class="h-8 mt-4 w-full">
             <svg class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 30">
@@ -67,7 +86,7 @@
             <div class="flex items-baseline gap-1">
                 <span class="font-data-mono text-2xl font-bold text-on-surface">{{ data.transactionsCount || 0 }}</span>
             </div>
-            <p class="font-body-md text-xs text-on-surface-variant mt-1">this month</p>
+            <p class="font-body-md text-xs text-on-surface-variant mt-1">in {{ currentMonthName }}</p>
         </div>
         <div class="mt-4 w-full h-2 bg-surface-variant rounded-full overflow-hidden flex">
             <div *ngFor="let item of data.categoryBreakdown" class="h-full" [style.width.%]="item.percentage" [style.backgroundColor]="item.categoryColor" [title]="item.categoryName"></div>
@@ -99,7 +118,7 @@
                 </div>
             </div>
             <div *ngIf="!data.budgetVsActual?.length" class="text-center text-on-surface-variant py-4 font-body-md">
-                No budgets set for this month.
+                No budgets set for {{ currentMonthName }}.
             </div>
         </div>
     </div>
@@ -117,7 +136,7 @@
                     <span class="font-data-mono">{{ item.total | currency:'LKR ':'symbol':'1.0-0' }}</span>
                 </div>
                 <div *ngIf="!data.categoryBreakdown?.length" class="text-center text-on-surface-variant py-4 font-body-md">
-                    No spending this month.
+                    No spending in {{ currentMonthName }}.
                 </div>
             </div>
         </div>

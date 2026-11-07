@@ -36,11 +36,13 @@ export class BudgetFormDialog implements OnInit {
   years = [this.currentYear, this.currentYear + 1, this.currentYear + 2];
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
+    const defaultMonth = data?.month || this.currentMonth;
+    const defaultYear = data?.year || this.currentYear;
     this.budgetForm = this.fb.group({
       categoryId: [null, Validators.required],
       amount: [null, [Validators.required, Validators.min(1)]],
-      month: [this.currentMonth, Validators.required],
-      year: [this.currentYear, Validators.required]
+      month: [defaultMonth, Validators.required],
+      year: [defaultYear, Validators.required]
     });
   }
 

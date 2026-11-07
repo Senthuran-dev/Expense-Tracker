@@ -1,7 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AnalyticsService, YearlySummary, CategoryBreakdown, MonthlyTrend, BudgetSummary } from '../../../core/services/analytics.service';
-import { Observable } from 'rxjs';
+import { DateFilterService } from '../../../core/services/date-filter.service';
+import { Observable, Subscription } from 'rxjs';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 
@@ -12,11 +13,16 @@ import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
   templateUrl: './charts-dashboard.html',
   styleUrl: './charts-dashboard.scss'
 })
-export class ChartsDashboard implements OnInit {
+export class ChartsDashboard implements OnInit, OnDestroy {
+  public dateFilterService = inject(DateFilterService);
   private analyticsService = inject(AnalyticsService);
+  private cdr = inject(ChangeDetectorRef);
 
-  currentMonth = new Date().getMonth() + 1;
-  currentYear = new Date().getFullYear();
+  currentMonth = this.dateFilterService.currentMonth;
+  currentYear = this.dateFilterService.currentYear;
+  currentMonthName = this.dateFilterService.monthName;
+
+  private dateSub?: Subscription;
 
   yearlySummary$: Observable<YearlySummary> | null = null;
   categoryBreakdown$: Observable<CategoryBreakdown[]> | null = null;
@@ -60,13 +66,23 @@ export class ChartsDashboard implements OnInit {
   totalSpentThisMonth = 0;
 
   ngOnInit(): void {
-    this.loadData();
+    this.yearlySummary$ = this.analyticsService.getYearlySummary();
+
+    this.dateSub = this.dateFilterService.selectedDate$.subscribe(({ month, year }) => {
+      this.currentMonth = month;
+      this.currentYear = year;
+      this.currentMonthName = this.dateFilterService.monthName;
+      this.loadData(month, year);
+      this.cdr.markForCheck();
+    });
   }
 
-  loadData(): void {
-    this.yearlySummary$ = this.analyticsService.getYearlySummary();
-    
-    this.analyticsService.getMonthlyTrend(this.currentYear).subscribe(trend => {
+  ngOnDestroy(): void {
+    this.dateSub?.unsubscribe();
+  }
+
+  loadData(month: number = this.currentMonth, year: number = this.currentYear): void {
+    this.analyticsService.getMonthlyTrend(year).subscribe(trend => {
       this.barChartData = {
         labels: trend.map(t => this.getMonthName(t.month)),
         datasets: [{
@@ -75,9 +91,10 @@ export class ChartsDashboard implements OnInit {
           borderRadius: 4
         }]
       };
+      this.cdr.markForCheck();
     });
 
-    this.analyticsService.getDailyTrend(this.currentMonth, this.currentYear).subscribe(trend => {
+    this.analyticsService.getDailyTrend(month, year).subscribe(trend => {
       this.lineChartData = {
         labels: trend.map(t => t.date),
         datasets: [{
@@ -88,9 +105,10 @@ export class ChartsDashboard implements OnInit {
           borderWidth: 2
         }]
       };
+      this.cdr.markForCheck();
     });
 
-    this.categoryBreakdown$ = this.analyticsService.getCategoryBreakdown(this.currentMonth, this.currentYear);
+    this.categoryBreakdown$ = this.analyticsService.getCategoryBreakdown(month, year);
     this.categoryBreakdown$.subscribe(breakdown => {
       this.totalSpentThisMonth = breakdown.reduce((sum, b) => sum + b.total, 0);
       
@@ -102,9 +120,10 @@ export class ChartsDashboard implements OnInit {
           borderWidth: 0
         }]
       };
+      this.cdr.markForCheck();
     });
 
-    this.budgetVsActual$ = this.analyticsService.getBudgetVsActual(this.currentMonth, this.currentYear);
+    this.budgetVsActual$ = this.analyticsService.getBudgetVsActual(month, year);
   }
 
   private getMonthName(month: number): string {
