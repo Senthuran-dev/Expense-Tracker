@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -16,6 +16,7 @@ export class Login {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   loginForm: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -30,6 +31,7 @@ export class Login {
     if (this.loginForm.valid) {
       this.isLoading = true;
       this.error = null;
+      this.cdr.markForCheck();
       
       const { email, password } = this.loginForm.value;
       
@@ -48,6 +50,7 @@ export class Login {
           } else {
             this.error = err.error?.message || 'Invalid email or password.';
           }
+          this.cdr.markForCheck();
         }
       });
     }
