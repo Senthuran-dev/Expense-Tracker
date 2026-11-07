@@ -2,6 +2,7 @@ package com.example.backend.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -49,9 +50,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorDetails> handleAuthenticationException(AuthenticationException ex) {
+        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), "Invalid email or password.", "UNAUTHORIZED");
+        return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDetails> handleGlobalException(Exception ex) {
-        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), "An unexpected error occurred.", "INTERNAL_SERVER_ERROR");
+        String message = (ex.getMessage() != null && !ex.getMessage().isBlank()) ? ex.getMessage() : "An unexpected error occurred.";
+        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), message, "INTERNAL_SERVER_ERROR");
         return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
