@@ -1,10 +1,11 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ExpenseService, Expense, Page } from '../../../core/services/expense.service';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { CategoryService, Category } from '../../../core/services/category.service';
-import { Observable, of } from 'rxjs';
+import { DateFilterService } from '../../../core/services/date-filter.service';
+import { Observable, Subscription, of } from 'rxjs';
 import { map, tap, catchError } from 'rxjs/operators';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ExpenseFormDialog } from '../expense-form-dialog/expense-form-dialog';
@@ -17,16 +18,18 @@ import { ExportDialog } from '../export-dialog/export-dialog';
   templateUrl: './expense-list.html',
   styleUrl: './expense-list.scss'
 })
-export class ExpenseList implements OnInit {
+export class ExpenseList implements OnInit, OnDestroy {
+  public dateFilterService = inject(DateFilterService);
   private expenseService = inject(ExpenseService);
   private analyticsService = inject(AnalyticsService);
   private categoryService = inject(CategoryService);
   private dialog = inject(MatDialog);
+  private cdr = inject(ChangeDetectorRef);
   
   expensesPage$: Observable<Page<Expense>> | null = null;
   categories$: Observable<Category[]> = this.categoryService.getCategories();
   selectedCategoryId: number | null = null;
-  currentMonthYear = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date());
+  currentMonthYear = this.dateFilterService.formattedMonthYear;
 
   page = 0;
   size = 10;
@@ -41,10 +44,20 @@ export class ExpenseList implements OnInit {
   totalSpent = 0;
   totalExpensesCount = 0;
   avgPerDay = 0;
+
+  private dateSub?: Subscription;
   
   ngOnInit(): void {
     this.loadExpenses();
-    this.loadSummaries();
+    this.dateSub = this.dateFilterService.selectedDate$.subscribe(({ month, year }) => {
+      this.currentMonthYear = this.dateFilterService.formattedMonthYear;
+      this.loadSummaries(month, year);
+      this.cdr.markForCheck();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.dateSub?.unsubscribe();
   }
   
   loadExpenses(): void {
@@ -74,13 +87,12 @@ export class ExpenseList implements OnInit {
     );
   }
 
-  loadSummaries(): void {
-    const currentMonth = new Date().getMonth() + 1;
-    const currentYear = new Date().getFullYear();
-    this.analyticsService.getCategoryBreakdown(currentMonth, currentYear).subscribe(breakdowns => {
+  loadSummaries(month: number = this.dateFilterService.currentMonth, year: number = this.dateFilterService.currentYear): void {
+    this.analyticsService.getCategoryBreakdown(month, year).subscribe(breakdowns => {
       this.totalSpent = breakdowns.reduce((sum, b) => sum + b.total, 0);
-      const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+      const daysInMonth = new Date(year, month, 0).getDate();
       this.avgPerDay = this.totalSpent / daysInMonth;
+      this.cdr.markForCheck();
     });
   }
 

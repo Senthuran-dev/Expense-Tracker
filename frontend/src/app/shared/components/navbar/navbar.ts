@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { AuthService } from '../../../core/services/auth.service';
+import { DateFilterService } from '../../../core/services/date-filter.service';
 
 @Component({
   selector: 'app-navbar',
@@ -15,10 +16,16 @@ export class Navbar implements OnInit {
   @Output() toggleSidebar = new EventEmitter<void>();
   
   public authService = inject(AuthService);
+  public dateFilterService = inject(DateFilterService);
   private router = inject(Router);
 
   pageTitle = 'Dashboard';
-  currentMonthYear = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date());
+  isDropdownOpen = false;
+  tempYear = this.dateFilterService.currentYear;
+  months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
 
   ngOnInit() {
     this.updateTitle(this.router.url);
@@ -27,6 +34,47 @@ export class Navbar implements OnInit {
     ).subscribe((event: any) => {
       this.updateTitle(event.urlAfterRedirects || event.url);
     });
+
+    this.dateFilterService.selectedDate$.subscribe(d => {
+      this.tempYear = d.year;
+    });
+  }
+
+  toggleDropdown() {
+    this.isDropdownOpen = !this.isDropdownOpen;
+    if (this.isDropdownOpen) {
+      this.tempYear = this.dateFilterService.currentYear;
+    }
+  }
+
+  closeDropdown() {
+    this.isDropdownOpen = false;
+  }
+
+  prevMonth() {
+    this.dateFilterService.prevMonth();
+  }
+
+  nextMonth() {
+    this.dateFilterService.nextMonth();
+  }
+
+  selectMonth(monthIndex: number) {
+    this.dateFilterService.setDate(monthIndex + 1, this.tempYear);
+    this.closeDropdown();
+  }
+
+  prevYear() {
+    this.tempYear--;
+  }
+
+  nextYear() {
+    this.tempYear++;
+  }
+
+  selectCurrentMonth() {
+    this.dateFilterService.resetToCurrent();
+    this.closeDropdown();
   }
 
   private updateTitle(url: string) {

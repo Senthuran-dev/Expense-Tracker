@@ -1,11 +1,16 @@
 <div class="max-w-[1440px] mx-auto">
 <!-- Page Header & Action -->
 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-stack_lg gap-4">
-<p class="font-body-md text-body-md text-outline">Set monthly spending limits per category and track your progress in real time.</p>
-<button class="bg-secondary hover:bg-secondary-fixed-dim text-on-secondary font-title-sm text-title-sm h-[40px] px-4 rounded flex items-center gap-2 transition-colors active:scale-95">
-<span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
-                        Set Budget
-                    </button>
+  <div class="flex items-center gap-2 flex-wrap">
+    <p class="font-body-md text-body-md text-outline">Set monthly spending limits per category and track your progress in real time.</p>
+    <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-secondary/10 text-secondary">
+      {{ currentMonthName }} {{ currentYear }}
+    </span>
+  </div>
+  <button type="button" (click)="openBudgetDialog()" class="bg-secondary hover:bg-secondary-fixed-dim text-on-secondary font-title-sm text-title-sm h-[40px] px-4 rounded flex items-center gap-2 transition-colors active:scale-95 cursor-pointer">
+    <span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
+    Set Budget
+  </button>
 </div>
 <!-- Budget Overview Card -->
 <div class="bg-surface-container-lowest rounded-xl border border-[#E0E0E0] card-shadow mb-stack_lg flex flex-col md:flex-row p-6 items-center gap-6">
