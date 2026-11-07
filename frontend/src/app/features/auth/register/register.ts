@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -16,6 +16,7 @@ export class Register {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   registerForm: FormGroup = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
@@ -39,6 +40,7 @@ export class Register {
     if (this.registerForm.valid) {
       this.isLoading = true;
       this.error = null;
+      this.cdr.markForCheck();
       
       const { name, email, password } = this.registerForm.value;
       
@@ -57,6 +59,7 @@ export class Register {
           } else {
             this.error = err.error?.message || 'Failed to register. Please try again.';
           }
+          this.cdr.markForCheck();
         }
       });
     }
